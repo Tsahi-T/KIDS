@@ -4,185 +4,206 @@ import { generateQuestion } from '../utils/questions.js'
 
 // ─── constants ────────────────────────────────────────────────────────────────
 const W = 600, H = 320
-const GROUND_Y = 255          // y of ground surface
-const CHAR_X = 110            // character fixed x
-const GRAVITY = 0.55
-const JUMP_VY = -13.5
-const BASE_SPEED = 3.2
-const OBS_W = 28
-const MAX_OBS = 10            // obstacles per game
-const QUESTION_DIST = 95      // obstacle x distance from char when question triggers
-const CLOUD_COUNT = 4
+const GROUND_Y   = 255
+const CHAR_X     = 110
+const GRAVITY    = 0.45
+const JUMP_VY    = -15
+const BASE_SPEED = 2.8
+const OBS_W      = 32
+const MAX_OBS    = 10
+const Q_DIST     = 100   // px ahead of char when question triggers
+const WARN_DIST  = 210   // px ahead when warning starts
 
-function makeCloud(x) {
-  return { x, y: 30 + Math.random() * 70, r: 28 + Math.random() * 22, speed: 0.25 + Math.random() * 0.35 }
-}
-
+// ─── helpers ──────────────────────────────────────────────────────────────────
 function makeObstacle() {
-  return {
-    x: W + 40,
-    h: 75 + Math.floor(Math.random() * 50),
-    question: generateQuestion(),
-    asked: false,
-  }
+  return { x: W + 60, h: 80 + Math.floor(Math.random() * 50), question: generateQuestion(), asked: false }
+}
+function makeCloud(x) {
+  return { x, y: 25 + Math.random() * 80, r: 28 + Math.random() * 26, speed: 0.2 + Math.random() * 0.3 }
 }
 
-// ─── drawing helpers ───────────────────────────────────────────────────────────
+// ─── canvas helpers ───────────────────────────────────────────────────────────
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.arcTo(x + w, y,     x + w, y + r,     r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
+  ctx.lineTo(x + r, y + h)
+  ctx.arcTo(x,     y + h, x,     y + h - r, r)
+  ctx.lineTo(x, y + r)
+  ctx.arcTo(x,     y,     x + r, y,         r)
+  ctx.closePath()
+}
+
+// ─── draw functions ───────────────────────────────────────────────────────────
 function drawSky(ctx) {
   const g = ctx.createLinearGradient(0, 0, 0, GROUND_Y)
-  g.addColorStop(0, '#5BB8F5')
-  g.addColorStop(1, '#C9E8FF')
+  g.addColorStop(0, '#3A9DD1'); g.addColorStop(1, '#B0DFF5')
   ctx.fillStyle = g
   ctx.fillRect(0, 0, W, GROUND_Y)
 }
 
 function drawGround(ctx) {
-  ctx.fillStyle = '#6DBF5E'
-  ctx.fillRect(0, GROUND_Y, W, 18)
-  ctx.fillStyle = '#A0785A'
-  ctx.fillRect(0, GROUND_Y + 18, W, H - GROUND_Y - 18)
-  // grass tufts
-  ctx.fillStyle = '#52A845'
-  for (let x = 5; x < W; x += 22) {
-    ctx.fillRect(x, GROUND_Y - 4, 4, 8)
-    ctx.fillRect(x + 9, GROUND_Y - 6, 4, 10)
+  ctx.fillStyle = '#52A843'
+  ctx.fillRect(0, GROUND_Y, W, 20)
+  ctx.fillStyle = '#7D5230'
+  ctx.fillRect(0, GROUND_Y + 20, W, H - GROUND_Y - 20)
+  ctx.fillStyle = '#3E8A34'
+  for (let x = 4; x < W; x += 24) {
+    ctx.fillRect(x, GROUND_Y - 5, 4, 9)
+    ctx.fillRect(x + 11, GROUND_Y - 7, 4, 11)
   }
 }
 
-function drawCloud(ctx, cloud) {
+function drawCloud(ctx, cl) {
   ctx.fillStyle = 'rgba(255,255,255,0.88)'
   ctx.beginPath()
-  ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2)
-  ctx.arc(cloud.x + cloud.r * 0.9, cloud.y + 5, cloud.r * 0.7, 0, Math.PI * 2)
-  ctx.arc(cloud.x - cloud.r * 0.8, cloud.y + 6, cloud.r * 0.65, 0, Math.PI * 2)
+  ctx.arc(cl.x, cl.y, cl.r, 0, Math.PI * 2)
+  ctx.arc(cl.x + cl.r * .9, cl.y + 5, cl.r * .65, 0, Math.PI * 2)
+  ctx.arc(cl.x - cl.r * .75, cl.y + 6, cl.r * .6, 0, Math.PI * 2)
   ctx.fill()
 }
 
-function drawObstacle(ctx, obs) {
+function drawObstacle(ctx, obs, warn) {
   const top = GROUND_Y - obs.h
-  // shaft
+  if (warn) {
+    ctx.fillStyle = 'rgba(255,215,0,.15)'
+    ctx.fillRect(obs.x - 12, top - 12, OBS_W + 24, obs.h + 12)
+  }
   const g = ctx.createLinearGradient(obs.x, 0, obs.x + OBS_W, 0)
-  g.addColorStop(0, '#78909C')
-  g.addColorStop(0.4, '#B0BEC5')
-  g.addColorStop(1, '#546E7A')
+  g.addColorStop(0, '#607D8B'); g.addColorStop(.35, '#90A4AE'); g.addColorStop(1, '#455A64')
   ctx.fillStyle = g
-  ctx.fillRect(obs.x, top, OBS_W, obs.h)
-  // capital
-  ctx.fillStyle = '#90A4AE'
-  ctx.fillRect(obs.x - 6, top, OBS_W + 12, 14)
-  // base
-  ctx.fillRect(obs.x - 6, GROUND_Y - 14, OBS_W + 12, 14)
-  // crack detail
-  ctx.strokeStyle = 'rgba(0,0,0,0.15)'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(obs.x + OBS_W * 0.4, top + 20)
-  ctx.lineTo(obs.x + OBS_W * 0.55, top + 50)
-  ctx.stroke()
-}
-
-function drawCharacter(ctx, char, avatar, frame) {
-  const x = char.x
-  const fy = char.y // feet y
-
-  const legSwing = char.onGround ? Math.sin(frame * 0.28) * 10 : 0
-  const scale = 1
-
-  // shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.15)'
-  ctx.beginPath()
-  ctx.ellipse(x, GROUND_Y + 4, 18, 5, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // legs
-  ctx.strokeStyle = '#1565C0'
-  ctx.lineWidth = 5
-  ctx.lineCap = 'round'
-  ctx.beginPath()
-  ctx.moveTo(x - 3, fy - 16)
-  ctx.lineTo(x - 10 + legSwing, fy)
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(x + 3, fy - 16)
-  ctx.lineTo(x + 10 - legSwing, fy)
-  ctx.stroke()
-
-  // body
-  ctx.fillStyle = '#1E88E5'
-  ctx.beginPath()
-  ctx.roundRect(x - 13, fy - 40, 26, 26, 6)
-  ctx.fill()
-
-  // arms
-  const armSwing = char.onGround ? Math.sin(frame * 0.28 + Math.PI) * 10 : -15
-  ctx.strokeStyle = '#1565C0'
-  ctx.lineWidth = 4
-  ctx.beginPath()
-  ctx.moveTo(x - 13, fy - 34)
-  ctx.lineTo(x - 24, fy - 24 + armSwing)
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(x + 13, fy - 34)
-  ctx.lineTo(x + 24, fy - 24 - armSwing)
-  ctx.stroke()
-
-  // head + avatar emoji
-  ctx.font = `${36 * scale}px serif`
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'bottom'
-  ctx.fillText(avatar, x, fy - 38)
-}
-
-function drawHearts(ctx, lives) {
-  for (let i = 0; i < 3; i++) {
-    ctx.fillStyle = i < lives ? '#E53935' : 'rgba(255,255,255,0.2)'
-    const hx = W - 22 - i * 28, hy = 18
-    ctx.beginPath()
-    ctx.moveTo(hx, hy + 7)
-    ctx.bezierCurveTo(hx, hy + 2, hx - 9, hy - 4, hx - 9, hy - 1)
-    ctx.bezierCurveTo(hx - 9, hy - 7, hx, hy - 7, hx, hy - 2)
-    ctx.bezierCurveTo(hx, hy - 7, hx + 9, hy - 7, hx + 9, hy - 1)
-    ctx.bezierCurveTo(hx + 9, hy - 4, hx, hy + 2, hx, hy + 7)
-    ctx.fill()
+  ctx.fillRect(obs.x, top + 16, OBS_W, obs.h - 32)
+  ctx.fillStyle = '#78909C'
+  ctx.fillRect(obs.x - 7, top,       OBS_W + 14, 18)  // capital
+  ctx.fillRect(obs.x - 7, GROUND_Y - 18, OBS_W + 14, 18)  // base
+  ctx.fillStyle = 'rgba(255,255,255,.2)'
+  ctx.fillRect(obs.x + 5, top + 22, 7, obs.h - 50)
+  if (warn) {
+    ctx.font = 'bold 20px sans-serif'
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'
+    ctx.fillText('❓', obs.x + OBS_W / 2, top - 6)
   }
 }
 
-function drawScore(ctx, score) {
-  ctx.fillStyle = 'rgba(0,0,0,0.35)'
+function drawCharacter(ctx, char, avatar, frame, frozen) {
+  const x  = char.x
+  const fy = char.y
+
+  // dynamic shadow
+  const shadowScaleX = char.onGround ? 1 : Math.max(.35, 1 - (GROUND_Y - fy) / 180)
+  ctx.fillStyle = 'rgba(0,0,0,.2)'
   ctx.beginPath()
-  ctx.roundRect(10, 8, 110, 32, 8)
+  ctx.ellipse(x, GROUND_Y + 6, 24 * shadowScaleX, 6 * shadowScaleX, 0, 0, Math.PI * 2)
   ctx.fill()
+
+  const swing = frozen ? 0 : Math.sin(frame * .30) * 13
+
+  // ── legs ──────────────────────────────────────────────────────────────────
+  ctx.lineWidth = 8; ctx.lineCap = 'round'
+
+  // pants (dark blue)
+  ctx.strokeStyle = '#1A237E'
+  ctx.beginPath(); ctx.moveTo(x - 4, fy - 20); ctx.lineTo(x - 13 + swing, fy - 2); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(x + 4, fy - 20); ctx.lineTo(x + 13 - swing, fy - 2); ctx.stroke()
+
+  // shoes
+  ctx.fillStyle = '#E53935'
+  ctx.beginPath(); ctx.ellipse(x - 13 + swing, fy + 2, 10, 5, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(x + 13 - swing, fy + 2, 10, 5, 0, 0, Math.PI * 2); ctx.fill()
+  // shoe toe highlight
+  ctx.fillStyle = 'rgba(255,255,255,.35)'
+  ctx.beginPath(); ctx.ellipse(x - 15 + swing, fy, 4, 2.5, -0.3, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(x + 11 - swing, fy, 4, 2.5, 0.3, 0, Math.PI * 2); ctx.fill()
+
+  // ── body ──────────────────────────────────────────────────────────────────
+  // shirt (gradient blue)
+  const bg = ctx.createLinearGradient(x - 17, fy - 52, x + 17, fy - 16)
+  bg.addColorStop(0, '#42A5F5'); bg.addColorStop(1, '#1565C0')
+  ctx.fillStyle = bg
+  roundRect(ctx, x - 17, fy - 52, 34, 34, 9); ctx.fill()
+
+  // shirt collar
   ctx.fillStyle = 'white'
-  ctx.font = 'bold 18px Heebo, sans-serif'
-  ctx.textAlign = 'right'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(`✓ ${score}`, 114, 24)
+  ctx.beginPath(); ctx.arc(x, fy - 50, 5, 0, Math.PI * 2); ctx.fill()
+
+  // shirt pocket
+  ctx.fillStyle = 'rgba(255,255,255,.25)'
+  roundRect(ctx, x + 4, fy - 44, 9, 9, 3); ctx.fill()
+
+  // ── arms ──────────────────────────────────────────────────────────────────
+  const armSwing = frozen ? 0 : Math.sin(frame * .30 + Math.PI) * 14
+  ctx.lineWidth = 7; ctx.lineCap = 'round'
+  ctx.strokeStyle = '#1565C0'
+  ctx.beginPath(); ctx.moveTo(x - 17, fy - 44); ctx.lineTo(x - 28, fy - 32 + armSwing); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(x + 17, fy - 44); ctx.lineTo(x + 28, fy - 32 - armSwing); ctx.stroke()
+  // hands
+  ctx.fillStyle = '#FFCC80'
+  ctx.beginPath(); ctx.arc(x - 28, fy - 32 + armSwing, 5, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.arc(x + 28, fy - 32 - armSwing, 5, 0, Math.PI * 2); ctx.fill()
+
+  // ── head: emoji ────────────────────────────────────────────────────────────
+  ctx.font      = '46px serif'
+  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'
+  ctx.fillText(avatar, x, fy - 50)
+}
+
+function drawHUD(ctx, lives, score) {
+  ctx.fillStyle = 'rgba(0,0,0,.42)'
+  roundRect(ctx, 10, 8, 118, 36, 9); ctx.fill()
+  ctx.fillStyle = 'white'
+  ctx.font = 'bold 19px Heebo, Arial, sans-serif'
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle'
+  ctx.fillText(`✓ ${score}`, 122, 26)
+
+  for (let i = 0; i < 3; i++) {
+    ctx.fillStyle = i < lives ? '#E53935' : 'rgba(255,255,255,.2)'
+    const hx = W - 22 - i * 33, hy = 26, r = 10
+    ctx.beginPath()
+    ctx.moveTo(hx, hy + r * .7)
+    ctx.bezierCurveTo(hx, hy + r * .2, hx - r, hy - r * .3, hx - r, hy - r * .4)
+    ctx.bezierCurveTo(hx - r, hy - r * 1.1, hx, hy - r * .9, hx, hy - r * .4)
+    ctx.bezierCurveTo(hx, hy - r * .9, hx + r, hy - r * 1.1, hx + r, hy - r * .4)
+    ctx.bezierCurveTo(hx + r, hy - r * .3, hx, hy + r * .2, hx, hy + r * .7)
+    ctx.fill()
+  }
 }
 
 // ─── component ────────────────────────────────────────────────────────────────
 export default function Game({ player, onGameOver }) {
   const canvasRef = useRef(null)
-  const stateRef = useRef(null)
-  const rafRef = useRef(null)
+  const stateRef  = useRef(null)
+  const rafRef    = useRef(null)
 
-  const [showQ, setShowQ] = useState(false)
-  const [question, setQuestion] = useState(null)
+  const [showQ,          setShowQ]          = useState(false)
+  const [question,       setQuestion]       = useState(null)
   const [answerDisabled, setAnswerDisabled] = useState(false)
-  const [feedback, setFeedback] = useState(null) // 'correct' | 'wrong'
+  const [feedback,       setFeedback]       = useState(null)
 
   function createState() {
     return {
-      phase: 'running',   // 'running' | 'question' | 'animating' | 'done'
-      speed: BASE_SPEED,
-      frame: 0,
-      char: { x: CHAR_X, y: GROUND_Y, vy: 0, onGround: true, hitFlash: 0 },
+      phase:   'running',
+      speed:   BASE_SPEED,
+      frame:   0,
+      char:    { x: CHAR_X, y: GROUND_Y, vy: 0, onGround: true, hitFlash: 0 },
       obstacles: [],
-      clouds: Array.from({ length: CLOUD_COUNT }, (_, i) => makeCloud((i * W) / CLOUD_COUNT + Math.random() * 60)),
-      score: 0,
-      lives: 3,
+      clouds:  Array.from({ length: 5 }, (_, i) => makeCloud(60 + i * (W / 5))),
+      score:   0,
+      lives:   3,
       spawned: 0,
-      lastObstacleX: W,
     }
+  }
+
+  function applyWrong(s) {
+    s.lives--
+    s.char.hitFlash = 50
+    s.speed = BASE_SPEED
+    setFeedback('wrong')
+    setShowQ(false)
+    s.phase = 'animating'
+    setTimeout(() => setFeedback(null), 900)
   }
 
   const handleAnswer = useCallback((ans) => {
@@ -190,36 +211,38 @@ export default function Game({ player, onGameOver }) {
     if (!s || s.phase !== 'question') return
     setAnswerDisabled(true)
 
-    const obs = s.obstacles.find(o => o.asked)
+    const obs     = s.obstacles.find(o => o.asked)
     const correct = obs && ans === obs.question.correct
 
     if (correct) {
       s.score++
-      s.char.vy = JUMP_VY
+      s.char.vy      = JUMP_VY
       s.char.onGround = false
-      s.speed = BASE_SPEED   // resume world so obstacle scrolls under the jump
+      s.speed        = BASE_SPEED
       setFeedback('correct')
+      setShowQ(false)
+      s.phase = 'animating'
+      setTimeout(() => setFeedback(null), 900)
     } else {
-      s.lives--
-      s.char.hitFlash = 40
-      s.speed = BASE_SPEED   // obstacle scrolls away
-      setFeedback('wrong')
+      applyWrong(s)
     }
+  }, [])
 
-    setShowQ(false)
-    s.phase = 'animating'
-
-    setTimeout(() => setFeedback(null), 900)
+  const handleTimeout = useCallback(() => {
+    const s = stateRef.current
+    if (!s || s.phase !== 'question') return
+    setAnswerDisabled(true)
+    applyWrong(s)
   }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
+    const ctx    = canvas.getContext('2d')
     stateRef.current = createState()
 
     function resize() {
-      const ratio = Math.min(window.innerWidth / W, (window.innerHeight - 120) / H)
-      canvas.style.width = `${W * ratio}px`
+      const ratio = Math.min(window.innerWidth / W, (window.innerHeight - 130) / H, 1)
+      canvas.style.width  = `${W * ratio}px`
       canvas.style.height = `${H * ratio}px`
     }
     resize()
@@ -227,46 +250,39 @@ export default function Game({ player, onGameOver }) {
 
     function tick() {
       const s = stateRef.current
-      s.frame++
 
-      // ── update ──
       if (s.phase === 'running' || s.phase === 'animating') {
+        s.frame++
         const c = s.char
 
-        // gravity / jump
+        // physics
         c.vy += GRAVITY
-        c.y += c.vy
-        if (c.y >= GROUND_Y) {
-          c.y = GROUND_Y
-          c.vy = 0
-          c.onGround = true
-        }
+        c.y  += c.vy
+        if (c.y >= GROUND_Y) { c.y = GROUND_Y; c.vy = 0; c.onGround = true }
 
-        // hit flash
         if (c.hitFlash > 0) c.hitFlash--
 
-        // move obstacles
-        for (const obs of s.obstacles) obs.x -= s.speed
+        // scroll
+        for (const o of s.obstacles) o.x -= s.speed
 
         if (s.phase === 'running') {
-          // spawn obstacles
-          const gap = 280 + Math.random() * 120
+          // spawn
           if (s.spawned < MAX_OBS) {
             const last = s.obstacles[s.obstacles.length - 1]
+            const gap  = 300 + Math.random() * 100
             if (!last || last.x < W - gap) {
               s.obstacles.push(makeObstacle())
               s.spawned++
             }
           }
-
           // trigger question
-          for (const obs of s.obstacles) {
-            if (!obs.asked && obs.x - CHAR_X < QUESTION_DIST) {
-              obs.asked = true
-              obs.x = CHAR_X + QUESTION_DIST  // freeze position neatly
-              s.speed = 0
-              s.phase = 'question'
-              setQuestion(obs.question)
+          for (const o of s.obstacles) {
+            if (!o.asked && (o.x - CHAR_X) < Q_DIST) {
+              o.asked  = true
+              o.x      = CHAR_X + Q_DIST
+              s.speed  = 0
+              s.phase  = 'question'
+              setQuestion({ ...o.question })
               setAnswerDisabled(false)
               setShowQ(true)
               break
@@ -274,53 +290,54 @@ export default function Game({ player, onGameOver }) {
           }
         }
 
-        // resume after animation
+        // resume
         if (s.phase === 'animating' && c.onGround && c.hitFlash === 0) {
-          s.obstacles = s.obstacles.filter(o => o.x > -OBS_W - 20)
+          s.obstacles = s.obstacles.filter(o => o.x > -OBS_W - 30)
           if (s.lives <= 0) {
             s.phase = 'done'
-            onGameOver(s.score, MAX_OBS, false)
-            return
+            cancelAnimationFrame(rafRef.current)
+            onGameOver(s.score, MAX_OBS, false); return
           }
           if (s.spawned >= MAX_OBS && s.obstacles.length === 0) {
             s.phase = 'done'
-            onGameOver(s.score, MAX_OBS, true)
-            return
+            cancelAnimationFrame(rafRef.current)
+            onGameOver(s.score, MAX_OBS, true); return
           }
           s.speed = BASE_SPEED
           s.phase = 'running'
         }
 
-        // remove far-left obstacles
         s.obstacles = s.obstacles.filter(o => o.x > -OBS_W - 40)
 
-        // win check (running phase, after last obstacle scrolls off)
         if (s.phase === 'running' && s.spawned >= MAX_OBS && s.obstacles.length === 0) {
           s.phase = 'done'
-          onGameOver(s.score, MAX_OBS, true)
-          return
+          cancelAnimationFrame(rafRef.current)
+          onGameOver(s.score, MAX_OBS, true); return
         }
       }
 
-      // ── clouds ──
+      // clouds always move
       for (const cl of s.clouds) {
         cl.x -= cl.speed
         if (cl.x < -cl.r * 2) cl.x = W + cl.r
       }
 
-      // ── draw ──
+      // ── draw ──────────────────────────────────────────────────────────────
       ctx.clearRect(0, 0, W, H)
       drawSky(ctx)
       for (const cl of s.clouds) drawCloud(ctx, cl)
       drawGround(ctx)
-      for (const obs of s.obstacles) drawObstacle(ctx, obs)
 
-      const c = s.char
-      const flash = c.hitFlash > 0 && Math.floor(c.hitFlash / 5) % 2 === 1
-      if (!flash) drawCharacter(ctx, c, player.avatar, s.frame)
+      for (const o of s.obstacles) {
+        const warn = !o.asked && (o.x - CHAR_X) < WARN_DIST
+        drawObstacle(ctx, o, warn)
+      }
 
-      drawHearts(ctx, s.lives)
-      drawScore(ctx, s.score)
+      const c     = s.char
+      const flash = c.hitFlash > 0 && Math.floor(c.hitFlash / 6) % 2 === 1
+      if (!flash) drawCharacter(ctx, c, player.avatar, s.frame, s.phase === 'question')
+
+      drawHUD(ctx, s.lives, s.score)
 
       rafRef.current = requestAnimationFrame(tick)
     }
@@ -346,7 +363,12 @@ export default function Game({ player, onGameOver }) {
           </div>
         )}
         {showQ && question && (
-          <QuestionModal question={question} onAnswer={handleAnswer} disabled={answerDisabled} />
+          <QuestionModal
+            question={question}
+            onAnswer={handleAnswer}
+            onTimeout={handleTimeout}
+            disabled={answerDisabled}
+          />
         )}
       </div>
     </div>

@@ -12,13 +12,6 @@ async function loadProfile(userId) {
   }
 }
 
-async function saveProfile(userId, profile) {
-  await put(`users/${userId}.json`, JSON.stringify(profile), {
-    access: 'private',
-    addRandomSuffix: false,
-  })
-}
-
 export default async function handler(req, res) {
   const { user } = req.query
   if (!user) return res.status(400).json({ error: 'missing user' })
@@ -33,8 +26,16 @@ export default async function handler(req, res) {
     if (typeof body === 'string') { try { body = JSON.parse(body) } catch { body = {} } }
 
     const { game, score, total, coinDelta } = body ?? {}
-    const profile = await loadProfile(user)
 
+    // step 1: load
+    let profile
+    try {
+      profile = await loadProfile(user)
+    } catch (e) {
+      return res.status(500).json({ step: 'load', error: e.message })
+    }
+
+    // step 2: mutate
     if (game) {
       if (!profile.games[game]) profile.games[game] = { played: 0, bestScore: 0, history: [] }
       const g = profile.games[game]
@@ -43,14 +44,18 @@ export default async function handler(req, res) {
       g.history.push({ date: new Date().toISOString(), score: score ?? 0, total: total ?? 25 })
       if (g.history.length > 100) g.history = g.history.slice(-100)
     }
-
     if (coinDelta > 0) profile.coins = (profile.coins || 0) + coinDelta
 
+    // step 3: save
     try {
-      await saveProfile(user, profile)
-    } catch (putErr) {
-      return res.status(500).json({ error: putErr.message, stack: putErr.stack?.split('\n')[0] })
+      await put(`users/${user}.json`, JSON.stringify(profile), {
+        access: 'private',
+        addRandomSuffix: false,
+      })
+    } catch (e) {
+      return res.status(500).json({ step: 'put', error: e.message })
     }
+
     return res.json({ ok: true, coins: profile.coins })
   }
 

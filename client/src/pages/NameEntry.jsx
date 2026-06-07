@@ -1,10 +1,16 @@
 import { useState } from 'react'
 
-const AVATARS = ['🦊', '🐸', '🐼', '🦁', '🐯', '🦄', '🐲', '🚀']
+const FAMILY = [
+  { id: 'photo:OFEK',  label: 'אופק'  },
+  { id: 'photo:ORI',   label: 'אורי'  },
+  { id: 'photo:TSAHY', label: 'צאהי'  },
+]
+
+const EMOJIS = ['🦊', '🐸', '🐼', '🦁', '🐯', '🦄', '🐲', '🚀']
 
 export default function NameEntry({ onStart }) {
-  const [name, setName] = useState('')
-  const [avatar, setAvatar] = useState('🦊')
+  const [name,   setName]   = useState('')
+  const [avatar, setAvatar] = useState('photo:OFEK')
 
   return (
     <div className="entry-screen">
@@ -22,9 +28,25 @@ export default function NameEntry({ onStart }) {
         autoFocus
       />
 
-      <label className="field-label">בחר אווטר</label>
+      {/* family photos */}
+      <label className="field-label">המשפחה שלי</label>
+      <div className="family-row">
+        {FAMILY.map(f => (
+          <button
+            key={f.id}
+            className={`family-btn${avatar === f.id ? ' selected' : ''}`}
+            onClick={() => setAvatar(f.id)}
+          >
+            <img src={`/avatars/${f.id.split(':')[1]}.png`} alt={f.label} />
+            <span>{f.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* emoji avatars */}
+      <label className="field-label">או בחר דמות</label>
       <div className="avatar-grid">
-        {AVATARS.map(av => (
+        {EMOJIS.map(av => (
           <button
             key={av}
             className={`avatar-btn${avatar === av ? ' selected' : ''}`}

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import QuestionModal from '../components/QuestionModal.jsx'
+import AvatarDisplay, { isPhoto, photoName } from '../components/AvatarDisplay.jsx'
 import { generateQuestion } from '../utils/questions.js'
+
+const PHOTO_NAMES = ['OFEK', 'ORI', 'TSAHY']
 
 // ─── constants ────────────────────────────────────────────────────────────────
 const W = 600, H = 320
@@ -88,7 +91,7 @@ function drawObstacle(ctx, obs, warn) {
   }
 }
 
-function drawCharacter(ctx, char, avatar, frame, frozen) {
+function drawCharacter(ctx, char, avatar, frame, frozen, photos) {
   const x  = char.x
   const fy = char.y
 
@@ -144,10 +147,30 @@ function drawCharacter(ctx, char, avatar, frame, frozen) {
   ctx.beginPath(); ctx.arc(x - 28, fy - 32 + armSwing, 5, 0, Math.PI * 2); ctx.fill()
   ctx.beginPath(); ctx.arc(x + 28, fy - 32 - armSwing, 5, 0, Math.PI * 2); ctx.fill()
 
-  // ── head: emoji ────────────────────────────────────────────────────────────
-  ctx.font      = '46px serif'
-  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'
-  ctx.fillText(avatar, x, fy - 50)
+  // ── head ───────────────────────────────────────────────────────────────────
+  const headCY = fy - 76   // center-y of the head circle
+  const headR  = 24
+
+  if (isPhoto(avatar) && photos) {
+    const img = photos[photoName(avatar)]
+    if (img && img.complete && img.naturalWidth > 0) {
+      // crop a square from top-center of the photo (where the face is)
+      const sw = img.naturalWidth
+      const sh = sw                       // square crop
+      const sy = Math.max(0, (img.naturalHeight - sh) * 0.05)  // slight top bias
+      ctx.save()
+      ctx.beginPath(); ctx.arc(x, headCY, headR, 0, Math.PI * 2); ctx.clip()
+      ctx.drawImage(img, 0, sy, sw, sh, x - headR, headCY - headR, headR * 2, headR * 2)
+      ctx.restore()
+      // white border ring
+      ctx.strokeStyle = 'white'; ctx.lineWidth = 2.5
+      ctx.beginPath(); ctx.arc(x, headCY, headR, 0, Math.PI * 2); ctx.stroke()
+    }
+  } else {
+    ctx.font = '46px serif'
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+    ctx.fillText(avatar, x, headCY)
+  }
 }
 
 function drawHUD(ctx, lives, score) {
@@ -176,6 +199,8 @@ export default function Game({ player, onGameOver }) {
   const canvasRef = useRef(null)
   const stateRef  = useRef(null)
   const rafRef    = useRef(null)
+
+  const photosRef = useRef({})
 
   const [showQ,          setShowQ]          = useState(false)
   const [question,       setQuestion]       = useState(null)
@@ -233,6 +258,14 @@ export default function Game({ player, onGameOver }) {
     if (!s || s.phase !== 'question') return
     setAnswerDisabled(true)
     applyWrong(s)
+  }, [])
+
+  useEffect(() => {
+    PHOTO_NAMES.forEach(name => {
+      const img = new Image()
+      img.src = `/avatars/${name}.png`
+      photosRef.current[name] = img
+    })
   }, [])
 
   useEffect(() => {
@@ -335,7 +368,7 @@ export default function Game({ player, onGameOver }) {
 
       const c     = s.char
       const flash = c.hitFlash > 0 && Math.floor(c.hitFlash / 6) % 2 === 1
-      if (!flash) drawCharacter(ctx, c, player.avatar, s.frame, s.phase === 'question')
+      if (!flash) drawCharacter(ctx, c, player.avatar, s.frame, s.phase === 'question', photosRef.current)
 
       drawHUD(ctx, s.lives, s.score)
 
@@ -352,7 +385,9 @@ export default function Game({ player, onGameOver }) {
   return (
     <div className="game-screen">
       <div className="game-top">
-        <span className="player-tag">{player.avatar} {player.name}</span>
+        <span className="player-tag">
+          <AvatarDisplay avatar={player.avatar} size={28} /> {player.name}
+        </span>
         <span className="game-hint">לוח כפל עד 10×10</span>
       </div>
       <div className="canvas-wrapper">

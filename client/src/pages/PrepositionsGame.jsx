@@ -87,7 +87,6 @@ export default function PrepositionsGame({ player, onGameOver }) {
     qRef.current = q
     setQuestion(q)
     setRemaining(TIME_LIMIT)
-    setTimeout(() => speakEnglish(q.scene.sentence.replace('___', q.correct)), 300)
   }
 
   useEffect(() => { nextQuestion() }, [])
@@ -143,7 +142,6 @@ export default function PrepositionsGame({ player, onGameOver }) {
       setCoins(coinsRef.current)
       setCoinPop(Date.now())
       setTimeout(() => setCoinPop(null), 1100)
-      speakEnglish(qRef.current.scene.sentence.replace('___', ans))
     } else {
       livesRef.current = Math.max(0, livesRef.current - 1)
       setLives(livesRef.current)

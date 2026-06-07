@@ -33,7 +33,6 @@ export default function EnglishGame({ player, onGameOver }) {
     usedRef.current.add(q.index)
     setQuestion(q)
     setRemaining(TIME_LIMIT)
-    setTimeout(() => speakEnglish(q.word), 300)
   }
 
   // start first question

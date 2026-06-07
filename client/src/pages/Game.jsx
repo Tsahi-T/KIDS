@@ -247,8 +247,7 @@ export default function Game({ player, onGameOver }) {
     if (!s || s.phase !== 'question') return
     setAnswerDisabled(true)
 
-    const obs     = s.obstacles.find(o => o.asked)
-    const correct = obs && ans === obs.question.correct
+    const correct = ans === s.currentCorrect
 
     if (correct) {
       s.score++
@@ -322,10 +321,11 @@ export default function Game({ player, onGameOver }) {
           // trigger question
           for (const o of s.obstacles) {
             if (!o.asked && (o.x - CHAR_X) < Q_DIST) {
-              o.asked  = true
-              o.x      = CHAR_X + Q_DIST
-              s.speed  = 0
-              s.phase  = 'question'
+              o.asked          = true
+              o.x              = CHAR_X + Q_DIST
+              s.speed          = 0
+              s.phase          = 'question'
+              s.currentCorrect = o.question.correct
               setQuestion({ ...o.question })
               setAnswerDisabled(false)
               setShowQ(true)

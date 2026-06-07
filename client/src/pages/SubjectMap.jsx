@@ -25,10 +25,10 @@ const SUBJECTS = [
     id: 'english',
     icon: '🔤',
     name: 'English',
-    desc: 'בקרוב...',
+    desc: 'אוצר מילים',
     color1: '#43C59E',
     color2: '#1A7A5E',
-    available: false,
+    available: true,
   },
 ]
 

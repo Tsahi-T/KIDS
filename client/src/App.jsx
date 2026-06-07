@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import NameEntry   from './pages/NameEntry.jsx'
-import SubjectMap  from './pages/SubjectMap.jsx'
-import Game        from './pages/Game.jsx'
-import GameOver    from './pages/GameOver.jsx'
+import NameEntry    from './pages/NameEntry.jsx'
+import SubjectMap   from './pages/SubjectMap.jsx'
+import Game         from './pages/Game.jsx'
+import EnglishGame  from './pages/EnglishGame.jsx'
+import GameOver     from './pages/GameOver.jsx'
 
 export default function App() {
   const [screen,  setScreen]  = useState('entry')
@@ -33,8 +34,11 @@ export default function App() {
       {screen === 'map' && (
         <SubjectMap player={player} onSelect={handleSelect} />
       )}
-      {screen === 'game' && (
-        <Game key={`${subject}-${Date.now()}`} player={player} subject={subject} onGameOver={handleGameOver} />
+      {screen === 'game' && subject === 'math' && (
+        <Game key={`math-${Date.now()}`} player={player} onGameOver={handleGameOver} />
+      )}
+      {screen === 'game' && subject === 'english' && (
+        <EnglishGame key={`eng-${Date.now()}`} player={player} onGameOver={handleGameOver} />
       )}
       {screen === 'gameover' && (
         <GameOver

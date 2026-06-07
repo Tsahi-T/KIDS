@@ -615,6 +615,34 @@ html, body {
 
 .btn-row .start-btn { flex: 1.5; }
 
+.gameover-game-name {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: -0.3rem;
+  margin-bottom: 0.2rem;
+}
+
+.btn-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.9rem;
+  border: none;
+  background: #25D366;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: transform 0.15s, background 0.15s;
+}
+.btn-whatsapp:hover  { background: #1ebe5b; transform: scale(1.02); }
+.btn-whatsapp:active { transform: scale(0.97); }
+
 .btn-home-small {
   margin-top: 0.5rem;
   background: none;
@@ -1044,8 +1072,9 @@ html, body {
 }
 
 .prep-sentence {
-  font-size: 0.85rem;
-  color: #888;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ccc;
   text-align: center;
   direction: ltr;
   margin-top: 0.3rem;

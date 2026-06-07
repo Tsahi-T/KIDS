@@ -9,11 +9,19 @@ import PrepositionsGame from './pages/PrepositionsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
 
 export default function App() {
-  const [screen,   setScreen]   = useState('entry')
-  const [player,   setPlayer]   = useState({ name: '', avatar: 'photo:OFEK' })
-  const [subject,  setSubject]  = useState('math')
-  const [engGame,  setEngGame]  = useState('vocab')
-  const [result,   setResult]   = useState({ score: 0, total: 25, won: false })
+  const [screen,    setScreen]   = useState('entry')
+  const [player,    setPlayer]   = useState({ name: '', avatar: 'photo:OFEK' })
+  const [subject,   setSubject]  = useState('math')
+  const [engGame,   setEngGame]  = useState('vocab')
+  const [result,    setResult]   = useState({ score: 0, total: 25, won: false })
+  const [gameName,  setGameName] = useState('')
+
+  const GAME_NAMES = {
+    math:         'לוח כפל 🔢',
+    vocab:        'מילים ותמונות 🖼️',
+    numbers:      'מספרים 🔢',
+    prepositions: 'מיקום 📍',
+  }
 
   function handleStart(name, avatar) {
     setPlayer({ name, avatar })
@@ -23,11 +31,12 @@ export default function App() {
   function handleSubjectSelect(subj) {
     setSubject(subj)
     if (subj === 'english') setScreen('english-map')
-    else setScreen('game')
+    else { setGameName(GAME_NAMES.math); setScreen('game') }
   }
 
   function handleEngGameSelect(game) {
     setEngGame(game)
+    setGameName(GAME_NAMES[game] ?? game)
     setScreen('game')
   }
 
@@ -74,6 +83,7 @@ export default function App() {
           score={result.score}
           total={result.total}
           won={result.won}
+          gameName={gameName}
           onRestart={() => setScreen('game')}
           onMap={handleMap}
           onHome={() => setScreen('entry')}

@@ -1,15 +1,15 @@
-import { get } from '@vercel/blob'
+import { list } from '@vercel/blob'
 
 const FAMILY = ['ofek', 'ori', 'tsahy']
 const NAMES  = { ofek: 'אופק', ori: 'אורי', tsahy: 'צאהי' }
 
 async function loadProfile(userId) {
   try {
-    const result = await get(`users/${userId}.json`, { access: 'public' })
-    if (!result || result.statusCode === 404) return { userId, coins: 0, games: {} }
-    const chunks = []
-    for await (const chunk of result.stream) chunks.push(Buffer.from(chunk))
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'))
+    const { blobs } = await list({ prefix: `users/${userId}.json`, limit: 1 })
+    if (!blobs.length) return { userId, coins: 0, games: {} }
+    const r = await fetch(blobs[0].url, { cache: 'no-store' })
+    if (!r.ok) return { userId, coins: 0, games: {} }
+    return await r.json()
   } catch {
     return { userId, coins: 0, games: {} }
   }

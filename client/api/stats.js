@@ -47,7 +47,11 @@ export default async function handler(req, res) {
 
     if (coinDelta > 0) profile.coins = (profile.coins || 0) + coinDelta
 
-    await saveProfile(user, profile)
+    try {
+      await saveProfile(user, profile)
+    } catch (e) {
+      return res.status(500).json({ putError: e?.message ?? String(e) })
+    }
     return res.json({ ok: true, coins: profile.coins })
   }
 

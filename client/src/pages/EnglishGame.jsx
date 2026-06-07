@@ -24,14 +24,18 @@ export default function EnglishGame({ player, onGameOver }) {
   const timerRef   = useRef(null)
   const lockedRef  = useRef(false)
 
+  const audioRef = useRef(null)
+
   function speak(word) {
-    if (!window.speechSynthesis) return
-    window.speechSynthesis.cancel()
-    const utter  = new SpeechSynthesisUtterance(word)
-    utter.lang   = 'en-US'
-    utter.rate   = 0.8
-    utter.pitch  = 1.1
-    window.speechSynthesis.speak(utter)
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current = null
+    }
+    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word)}&tl=en-US&client=gtx`
+    const audio = new Audio(url)
+    audio.playbackRate = 0.9
+    audioRef.current = audio
+    audio.play().catch(() => {})
   }
 
   function nextQuestion() {

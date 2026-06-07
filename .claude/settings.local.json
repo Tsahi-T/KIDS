@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npm create *)",
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(py -m pip install rembg)",
+      "Bash(py -m pip show rembg)",
+      "Bash(py process_avatars.py)"
     ]
   }
 }

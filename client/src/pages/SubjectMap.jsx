@@ -41,7 +41,7 @@ const SUBJECTS = [
   },
 ]
 
-export default function SubjectMap({ player, onSelect }) {
+export default function SubjectMap({ player, userProfile, onSelect, onDashboard, onLeaderboard }) {
   const [coins, setCoins] = useState(0)
 
   useEffect(() => {
@@ -64,6 +64,12 @@ export default function SubjectMap({ player, onSelect }) {
           <span>🪙</span>
           <span>{coins}</span>
         </div>
+        {userProfile && (
+          <div className="map-icon-btns">
+            <button className="map-icon-btn" onClick={onDashboard} title="הישגים">📊</button>
+            <button className="map-icon-btn" onClick={onLeaderboard} title="שיאים">🏆</button>
+          </div>
+        )}
         <div className="map-title-text">בחר מקצוע</div>
       </div>
 

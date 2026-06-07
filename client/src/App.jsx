@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import NameEntry        from './pages/NameEntry.jsx'
 import SubjectMap       from './pages/SubjectMap.jsx'
 import EnglishMap       from './pages/EnglishMap.jsx'
@@ -10,6 +10,9 @@ import PrepositionsGame from './pages/PrepositionsGame.jsx'
 import MonthsGame       from './pages/MonthsGame.jsx'
 import FlagsGame        from './pages/FlagsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
+import Dashboard        from './pages/Dashboard.jsx'
+import Leaderboard      from './pages/Leaderboard.jsx'
+import { getCoins, setCoins } from './utils/coins.js'
 
 const GAME_NAMES = {
   math:         'לוח כפל 🔢',
@@ -21,15 +24,20 @@ const GAME_NAMES = {
 }
 
 export default function App() {
-  const [screen,   setScreen]   = useState('entry')
-  const [player,   setPlayer]   = useState({ name: '', avatar: 'photo:OFEK' })
-  const [subject,  setSubject]  = useState('math')
-  const [subGame,  setSubGame]  = useState('vocab')
-  const [gameName, setGameName] = useState('')
-  const [result,   setResult]   = useState({ score: 0, total: 25, won: false })
+  const [screen,      setScreen]      = useState('entry')
+  const [player,      setPlayer]      = useState({ name: '', avatar: 'photo:OFEK' })
+  const [userProfile, setUserProfile] = useState(null) // null = guest
+  const [subject,     setSubject]     = useState('math')
+  const [subGame,     setSubGame]     = useState('vocab')
+  const [gameName,    setGameName]    = useState('')
+  const [result,      setResult]      = useState({ score: 0, total: 25, won: false })
+  const coinsBeforeRef                = useRef(0)
+  const gameIdRef                     = useRef('math')
 
-  function handleStart(name, avatar) {
+  function handleStart(name, avatar, profile) {
     setPlayer({ name, avatar })
+    setUserProfile(profile)
+    if (profile) setCoins(profile.coins ?? 0)
     setScreen('map')
   }
 
@@ -37,18 +45,36 @@ export default function App() {
     setSubject(subj)
     if (subj === 'english') setScreen('english-map')
     else if (subj === 'general') setScreen('general-map')
-    else { setGameName(GAME_NAMES.math); setScreen('game') }
+    else {
+      gameIdRef.current     = 'math'
+      coinsBeforeRef.current = getCoins()
+      setGameName(GAME_NAMES.math)
+      setScreen('game')
+    }
   }
 
   function handleSubGameSelect(game) {
+    gameIdRef.current      = game
+    coinsBeforeRef.current = getCoins()
     setSubGame(game)
     setGameName(GAME_NAMES[game] ?? game)
     setScreen('game')
   }
 
-  function handleGameOver(score, total, won) {
+  async function handleGameOver(score, total, won) {
+    const coinDelta = Math.max(0, getCoins() - coinsBeforeRef.current)
     setResult({ score, total, won })
     setScreen('gameover')
+
+    if (userProfile?.userId) {
+      try {
+        await fetch(`/api/stats?user=${userProfile.userId}`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ game: gameIdRef.current, score, total, coinDelta }),
+        })
+      } catch { /* non-critical */ }
+    }
   }
 
   function handleMap() {
@@ -61,7 +87,15 @@ export default function App() {
     <div className="app">
       {screen === 'entry' && <NameEntry onStart={handleStart} />}
 
-      {screen === 'map' && <SubjectMap player={player} onSelect={handleSubjectSelect} />}
+      {screen === 'map' && (
+        <SubjectMap
+          player={player}
+          userProfile={userProfile}
+          onSelect={handleSubjectSelect}
+          onDashboard={() => setScreen('dashboard')}
+          onLeaderboard={() => setScreen('leaderboard')}
+        />
+      )}
 
       {screen === 'english-map' && (
         <EnglishMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
@@ -96,9 +130,28 @@ export default function App() {
           total={result.total}
           won={result.won}
           gameName={gameName}
-          onRestart={() => setScreen('game')}
+          onRestart={() => { coinsBeforeRef.current = getCoins(); setScreen('game') }}
           onMap={handleMap}
           onHome={() => setScreen('entry')}
+          onLeaderboard={() => setScreen('leaderboard')}
+          isAuthenticated={!!userProfile}
+        />
+      )}
+
+      {screen === 'dashboard' && (
+        <Dashboard
+          player={player}
+          userProfile={userProfile}
+          onBack={() => setScreen('map')}
+          onLeaderboard={() => setScreen('leaderboard')}
+        />
+      )}
+
+      {screen === 'leaderboard' && (
+        <Leaderboard
+          player={player}
+          userProfile={userProfile}
+          onBack={() => setScreen('map')}
         />
       )}
     </div>

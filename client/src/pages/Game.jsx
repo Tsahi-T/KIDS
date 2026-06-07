@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import QuestionModal from '../components/QuestionModal.jsx'
 import AvatarDisplay, { isPhoto, photoName } from '../components/AvatarDisplay.jsx'
 import { generateQuestion } from '../utils/questions.js'
+import { addCoins, calcCoins } from '../utils/coins.js'
 
 const PHOTO_NAMES = ['OFEK', 'ORI', 'TSAHY']
 
@@ -264,6 +265,7 @@ export default function Game({ player, onGameOver }) {
     if (correct) {
       s.score++
       s.coins += 10
+      addCoins(10)
       s.char.vy      = JUMP_VY
       s.char.onGround = false
       s.speed        = BASE_SPEED
@@ -355,11 +357,13 @@ export default function Game({ player, onGameOver }) {
           if (s.lives <= 0) {
             s.phase = 'done'
             cancelAnimationFrame(rafRef.current)
+            { const st = s.score >= MAX_OBS ? 3 : s.score >= Math.ceil(MAX_OBS*.7) ? 2 : s.score >= Math.ceil(MAX_OBS*.4) ? 1 : 0; addCoins(calcCoins(0, st)) }
             onGameOver(s.score, MAX_OBS, false); return
           }
           if (s.spawned >= MAX_OBS && s.obstacles.length === 0) {
             s.phase = 'done'
             cancelAnimationFrame(rafRef.current)
+            { const st = s.score >= MAX_OBS ? 3 : s.score >= Math.ceil(MAX_OBS*.7) ? 2 : s.score >= Math.ceil(MAX_OBS*.4) ? 1 : 0; addCoins(calcCoins(0, st)) }
             onGameOver(s.score, MAX_OBS, true); return
           }
           s.speed = BASE_SPEED
@@ -371,6 +375,7 @@ export default function Game({ player, onGameOver }) {
         if (s.phase === 'running' && s.spawned >= MAX_OBS && s.obstacles.length === 0) {
           s.phase = 'done'
           cancelAnimationFrame(rafRef.current)
+          { const st = s.score >= MAX_OBS ? 3 : s.score >= Math.ceil(MAX_OBS*.7) ? 2 : s.score >= Math.ceil(MAX_OBS*.4) ? 1 : 0; addCoins(calcCoins(0, st)) }
           onGameOver(s.score, MAX_OBS, true); return
         }
       }

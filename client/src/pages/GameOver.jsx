@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import AvatarDisplay, { isPhoto, photoName } from '../components/AvatarDisplay.jsx'
-import { getCoins, addCoins, calcCoins } from '../utils/coins.js'
+import { getCoins, calcCoins } from '../utils/coins.js'
 
-export default function GameOver({ player, score, total, won, gameName, onRestart, onMap, onHome }) {
+export default function GameOver({ player, score, total, won, gameName, onRestart, onMap, onHome, onLeaderboard, isAuthenticated }) {
   const stars    = score >= total ? 3 : score >= Math.ceil(total * 0.7) ? 2 : score >= Math.ceil(total * 0.4) ? 1 : 0
   const starStr  = '⭐'.repeat(stars) + '☆'.repeat(3 - stars)
   const earned   = calcCoins(score, stars)
@@ -11,8 +11,7 @@ export default function GameOver({ player, score, total, won, gameName, onRestar
   const [animate,    setAnimate]    = useState(false)
 
   useEffect(() => {
-    const newTotal = addCoins(earned)
-    setTotalCoins(newTotal)
+    setTotalCoins(getCoins())
     setTimeout(() => setAnimate(true), 400)
   }, [])
 
@@ -63,6 +62,10 @@ export default function GameOver({ player, score, total, won, gameName, onRestar
       <button className="btn-whatsapp" onClick={shareWhatsApp}>
         <span>📤 שתף בוואטסאפ</span>
       </button>
+
+      {isAuthenticated && onLeaderboard && (
+        <button className="btn-leaderboard" onClick={onLeaderboard}>🏆 לוח שיאים</button>
+      )}
 
       <button className="btn-home-small" onClick={onHome}>🏠 החלף שחקן</button>
     </div>

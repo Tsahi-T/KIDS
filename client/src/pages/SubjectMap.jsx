@@ -30,6 +30,15 @@ const SUBJECTS = [
     color2: '#1A7A5E',
     available: true,
   },
+  {
+    id: 'general',
+    icon: '🧠',
+    name: 'ידע כללי',
+    desc: 'דגלים • חודשים',
+    color1: '#F59E0B',
+    color2: '#B45309',
+    available: true,
+  },
 ]
 
 export default function SubjectMap({ player, onSelect }) {

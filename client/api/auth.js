@@ -2,7 +2,7 @@ import { get } from '@vercel/blob'
 
 async function loadProfile(userId) {
   try {
-    const result = await get(`users/${userId}.json`, { access: 'private' })
+    const result = await get(`users/${userId}.json`, { access: 'public' })
     if (!result || result.statusCode === 404) return { userId, coins: 0, games: {} }
     const chunks = []
     for await (const chunk of result.stream) chunks.push(Buffer.from(chunk))

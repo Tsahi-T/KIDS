@@ -2,7 +2,7 @@ import { get, put } from '@vercel/blob'
 
 async function loadProfile(userId) {
   try {
-    const result = await get(`users/${userId}.json`, { access: 'private' })
+    const result = await get(`users/${userId}.json`, { access: 'public' })
     if (!result || result.statusCode === 404) return { userId, coins: 0, games: {} }
     const chunks = []
     for await (const chunk of result.stream) chunks.push(Buffer.from(chunk))
@@ -10,6 +10,14 @@ async function loadProfile(userId) {
   } catch {
     return { userId, coins: 0, games: {} }
   }
+}
+
+async function saveProfile(userId, profile) {
+  await put(`users/${userId}.json`, JSON.stringify(profile), {
+    access: 'public',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  })
 }
 
 export default async function handler(req, res) {
@@ -26,16 +34,8 @@ export default async function handler(req, res) {
     if (typeof body === 'string') { try { body = JSON.parse(body) } catch { body = {} } }
 
     const { game, score, total, coinDelta } = body ?? {}
+    const profile = await loadProfile(user)
 
-    // step 1: load
-    let profile
-    try {
-      profile = await loadProfile(user)
-    } catch (e) {
-      return res.status(500).json({ step: 'load', error: e.message })
-    }
-
-    // step 2: mutate
     if (game) {
       if (!profile.games[game]) profile.games[game] = { played: 0, bestScore: 0, history: [] }
       const g = profile.games[game]
@@ -44,18 +44,10 @@ export default async function handler(req, res) {
       g.history.push({ date: new Date().toISOString(), score: score ?? 0, total: total ?? 25 })
       if (g.history.length > 100) g.history = g.history.slice(-100)
     }
+
     if (coinDelta > 0) profile.coins = (profile.coins || 0) + coinDelta
 
-    // step 3: save
-    try {
-      await put(`users/${user}.json`, JSON.stringify(profile), {
-        access: 'private',
-        addRandomSuffix: false,
-      })
-    } catch (e) {
-      return res.status(500).json({ step: 'put', error: e.message })
-    }
-
+    await saveProfile(user, profile)
     return res.json({ ok: true, coins: profile.coins })
   }
 

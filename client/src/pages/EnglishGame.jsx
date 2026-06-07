@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import AvatarDisplay, { isPhoto, photoName } from '../components/AvatarDisplay.jsx'
+import AvatarDisplay from '../components/AvatarDisplay.jsx'
 import { generateVocabQuestion } from '../utils/vocabulary.js'
 import { calcCoins, addCoins } from '../utils/coins.js'
+import { speakEnglish } from '../utils/tts.js'
 
 const MAX_Q      = 25
 const TIME_LIMIT = 20
@@ -24,19 +25,6 @@ export default function EnglishGame({ player, onGameOver }) {
   const timerRef   = useRef(null)
   const lockedRef  = useRef(false)
 
-  const audioRef = useRef(null)
-
-  function speak(word) {
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current = null
-    }
-    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word)}&tl=en-US&client=gtx`
-    const audio = new Audio(url)
-    audio.playbackRate = 0.9
-    audioRef.current = audio
-    audio.play().catch(() => {})
-  }
 
   function nextQuestion() {
     lockedRef.current = false
@@ -45,7 +33,7 @@ export default function EnglishGame({ player, onGameOver }) {
     usedRef.current.add(q.index)
     setQuestion(q)
     setRemaining(TIME_LIMIT)
-    setTimeout(() => speak(q.word), 300)
+    setTimeout(() => speakEnglish(q.word), 300)
   }
 
   // start first question
@@ -152,7 +140,7 @@ export default function EnglishGame({ player, onGameOver }) {
 
       {/* word + timer */}
       <div className="eng-word-row">
-        <button className="speak-btn" onClick={() => speak(question.word)} title="השמע מילה">
+        <button className="speak-btn" onClick={() => speakEnglish(question.word)} title="השמע מילה">
           🔊
         </button>
         <div className={`eng-word${urgent ? ' urgent-word' : ''}`}>{question.word}</div>

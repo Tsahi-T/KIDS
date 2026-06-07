@@ -10,35 +10,51 @@ const GAME_LABELS = {
   flags:        'דגלי מדינות 🌍',
 }
 
+const FAMILY_USERS = [
+  { id: 'ofek',  label: 'אופק', avatar: 'photo:OFEK'  },
+  { id: 'ori',   label: 'אורי', avatar: 'photo:ORI'   },
+  { id: 'tsahy', label: 'צאהי', avatar: 'photo:TSAHY' },
+]
+
 function fmt(isoDate) {
   const d = new Date(isoDate)
   return `${d.getDate()}/${d.getMonth() + 1} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
 }
 
 export default function Dashboard({ player, userProfile, onBack, onLeaderboard }) {
-  const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const isAdmin = userProfile?.userId === 'tsahy'
+
+  const [viewUserId, setViewUserId] = useState(userProfile?.userId ?? null)
+  const [profile,    setProfile]    = useState(null)
+  const [loading,    setLoading]    = useState(true)
 
   useEffect(() => {
-    if (!userProfile?.userId) { setLoading(false); return }
-    fetch(`/api/stats?user=${userProfile.userId}`)
+    if (!viewUserId) { setLoading(false); return }
+    setLoading(true)
+    setProfile(null)
+    fetch(`/api/stats?user=${viewUserId}`)
       .then(r => r.json())
       .then(data => setProfile(data))
       .catch(() => setProfile(null))
       .finally(() => setLoading(false))
-  }, [userProfile?.userId])
+  }, [viewUserId])
 
-  const games = profile?.games ?? {}
+  const viewUser    = FAMILY_USERS.find(u => u.id === viewUserId)
+  const displayAvatar = isAdmin ? (viewUser?.avatar ?? player.avatar) : player.avatar
+  const displayName   = isAdmin ? (viewUser?.label  ?? player.name)  : player.name
+  const games         = profile?.games ?? {}
 
   return (
     <div className="dash-screen">
+
+      {/* header */}
       <div className="dash-header">
         <button className="back-link" onClick={onBack}>← חזרה</button>
         <div className="dash-player">
-          <AvatarDisplay avatar={player.avatar} size={48} />
+          <AvatarDisplay avatar={displayAvatar} size={42} />
           <div className="dash-player-info">
-            <div className="dash-player-name">{player.name}</div>
-            <div className="dash-player-coins">🪙 {profile?.coins ?? userProfile?.coins ?? 0} מטבעות</div>
+            <div className="dash-player-name">{displayName}</div>
+            <div className="dash-player-coins">🪙 {profile?.coins ?? 0} מטבעות</div>
           </div>
         </div>
         {onLeaderboard && (
@@ -46,12 +62,32 @@ export default function Dashboard({ player, userProfile, onBack, onLeaderboard }
         )}
       </div>
 
-      <div className="dash-title">הישגים שלי</div>
+      {/* admin user tabs */}
+      {isAdmin && (
+        <div className="dash-user-tabs">
+          {FAMILY_USERS.map(u => (
+            <button
+              key={u.id}
+              className={`dash-tab${viewUserId === u.id ? ' dash-tab-active' : ''}`}
+              onClick={() => setViewUserId(u.id)}
+            >
+              <AvatarDisplay avatar={u.avatar} size={26} />
+              <span>{u.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="dash-title">
+        {isAdmin && viewUserId !== userProfile?.userId
+          ? `הישגים של ${displayName}`
+          : 'הישגים שלי'}
+      </div>
 
       {loading && <div className="dash-loading">טוען...</div>}
 
       {!loading && Object.keys(games).length === 0 && (
-        <div className="dash-empty">עדיין לא שיחקת. יאללה! 🎮</div>
+        <div className="dash-empty">עדיין לא שיחקו כאן. יאללה! 🎮</div>
       )}
 
       <div className="dash-games-list">
@@ -63,9 +99,7 @@ export default function Dashboard({ player, userProfile, onBack, onLeaderboard }
                 <span className="dash-game-name">{GAME_LABELS[gameId] ?? gameId}</span>
                 <span className="dash-game-badge">שיא: {g.bestScore}/25</span>
               </div>
-              <div className="dash-game-meta">
-                <span>🎮 {g.played} משחקים</span>
-              </div>
+              <div className="dash-game-meta">🎮 {g.played} משחקים</div>
               <div className="dash-history">
                 {recent.map((h, i) => (
                   <div key={i} className="dash-history-row">
@@ -79,6 +113,7 @@ export default function Dashboard({ player, userProfile, onBack, onLeaderboard }
           )
         })}
       </div>
+
     </div>
   )
 }

@@ -41,7 +41,7 @@ const SUBJECTS = [
   },
 ]
 
-export default function SubjectMap({ player, userProfile, onSelect, onDashboard, onLeaderboard }) {
+export default function SubjectMap({ player, userProfile, onSelect, onDashboard, onLeaderboard, onHome }) {
   const [coins, setCoins] = useState(0)
 
   useEffect(() => {
@@ -53,6 +53,7 @@ export default function SubjectMap({ player, userProfile, onSelect, onDashboard,
 
       {/* header */}
       <div className="map-header">
+        <button className="map-back-home" onClick={onHome}>← החלף שחקן</button>
         <div className="map-avatar">
           <AvatarDisplay avatar={player.avatar} size={38} />
         </div>

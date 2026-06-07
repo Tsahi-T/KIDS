@@ -24,20 +24,22 @@ const GAME_NAMES = {
 }
 
 export default function App() {
-  const [screen,      setScreen]      = useState('entry')
-  const [player,      setPlayer]      = useState({ name: '', avatar: 'photo:OFEK' })
-  const [userProfile, setUserProfile] = useState(null) // null = guest
-  const [subject,     setSubject]     = useState('math')
-  const [subGame,     setSubGame]     = useState('vocab')
-  const [gameName,    setGameName]    = useState('')
-  const [result,      setResult]      = useState({ score: 0, total: 25, won: false })
-  const coinsBeforeRef                = useRef(0)
-  const gameIdRef                     = useRef('math')
+  const [screen,          setScreen]          = useState('entry')
+  const [player,          setPlayer]          = useState({ name: '', avatar: 'photo:OFEK' })
+  const [userProfile,     setUserProfile]     = useState(null)
+  const [subject,         setSubject]         = useState('math')
+  const [subGame,         setSubGame]         = useState('vocab')
+  const [gameName,        setGameName]        = useState('')
+  const [result,          setResult]          = useState({ score: 0, total: 25, won: false })
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
+  const coinsBeforeRef                        = useRef(0)
+  const gameIdRef                             = useRef('math')
 
   function handleStart(name, avatar, profile) {
     setPlayer({ name, avatar })
     setUserProfile(profile)
-    if (profile) setCoins(profile.coins ?? 0)
+    // take max(localStorage, server) so partial-exit coins are never lost
+    if (profile) setCoins(Math.max(getCoins(), profile.coins ?? 0))
     setScreen('map')
   }
 
@@ -46,9 +48,10 @@ export default function App() {
     if (subj === 'english') setScreen('english-map')
     else if (subj === 'general') setScreen('general-map')
     else {
-      gameIdRef.current     = 'math'
+      gameIdRef.current      = 'math'
       coinsBeforeRef.current = getCoins()
       setGameName(GAME_NAMES.math)
+      setShowExitConfirm(false)
       setScreen('game')
     }
   }
@@ -58,11 +61,13 @@ export default function App() {
     coinsBeforeRef.current = getCoins()
     setSubGame(game)
     setGameName(GAME_NAMES[game] ?? game)
+    setShowExitConfirm(false)
     setScreen('game')
   }
 
   async function handleGameOver(score, total, won) {
     const coinDelta = Math.max(0, getCoins() - coinsBeforeRef.current)
+    setShowExitConfirm(false)
     setResult({ score, total, won })
     setScreen('gameover')
 
@@ -83,6 +88,11 @@ export default function App() {
     else setScreen('map')
   }
 
+  function confirmExit() {
+    setShowExitConfirm(false)
+    handleMap()
+  }
+
   return (
     <div className="app">
       {screen === 'entry' && <NameEntry onStart={handleStart} />}
@@ -94,6 +104,7 @@ export default function App() {
           onSelect={handleSubjectSelect}
           onDashboard={() => setScreen('dashboard')}
           onLeaderboard={() => setScreen('leaderboard')}
+          onHome={() => setScreen('entry')}
         />
       )}
 
@@ -121,6 +132,26 @@ export default function App() {
       )}
       {screen === 'game' && subject === 'general' && subGame === 'flags' && (
         <FlagsGame key={`flags-${Date.now()}`} player={player} onGameOver={handleGameOver} />
+      )}
+
+      {/* ── in-game exit button (fixed, always on top) ── */}
+      {screen === 'game' && (
+        <button className="game-exit-btn" onClick={() => setShowExitConfirm(true)}>✕</button>
+      )}
+
+      {/* ── exit confirmation modal ── */}
+      {showExitConfirm && (
+        <div className="exit-overlay" onClick={() => setShowExitConfirm(false)}>
+          <div className="exit-card" onClick={e => e.stopPropagation()}>
+            <div className="exit-icon">🚪</div>
+            <div className="exit-title">לצאת מהמשחק?</div>
+            <div className="exit-sub">ההתקדמות במשחק תאבד</div>
+            <div className="exit-btns">
+              <button className="exit-btn-no"  onClick={() => setShowExitConfirm(false)}>המשך לשחק</button>
+              <button className="exit-btn-yes" onClick={confirmExit}>כן, צא</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {screen === 'gameover' && (

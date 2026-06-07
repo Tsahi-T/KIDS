@@ -1531,3 +1531,145 @@ html, body {
 
 .lb-gs-name { font-size: 0.7rem; color: #888; }
 .lb-gs-val  { font-size: 0.85rem; font-weight: 700; color: #ddd; }
+
+/* ── In-game exit button ─────────────────────────────── */
+.game-exit-btn {
+  position: fixed;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 200;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.15s;
+  backdrop-filter: blur(4px);
+}
+.game-exit-btn:hover { background: rgba(248,113,113,0.35); border-color: #f87171; color: #f87171; }
+
+/* ── Exit confirmation overlay ───────────────────────── */
+.exit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+
+.exit-card {
+  background: #1c1b2e;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 1.4rem;
+  padding: 2rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 300px;
+  width: 88%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.exit-icon  { font-size: 2.2rem; }
+.exit-title { font-size: 1.3rem; font-weight: 900; }
+.exit-sub   { font-size: 0.85rem; color: #888; margin-bottom: 0.5rem; }
+
+.exit-btns {
+  display: flex;
+  gap: 0.7rem;
+  width: 100%;
+  margin-top: 0.4rem;
+}
+
+.exit-btn-no {
+  flex: 1;
+  padding: 0.7rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 0.8rem;
+  background: transparent;
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.exit-btn-no:hover { border-color: #a78bfa; color: #a78bfa; }
+
+.exit-btn-yes {
+  flex: 1;
+  padding: 0.7rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  border: none;
+  border-radius: 0.8rem;
+  background: #f87171;
+  color: white;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.exit-btn-yes:hover { background: #ef4444; }
+
+/* ── Subject Map – back to entry ────────────────────── */
+.map-back-home {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.8rem;
+  font-family: 'Heebo', sans-serif;
+  cursor: pointer;
+  padding: 0.15rem 0;
+  margin-bottom: 0.3rem;
+  transition: color 0.15s;
+  z-index: 1;
+}
+.map-back-home:hover { color: #a78bfa; }
+
+/* ── Dashboard – admin user tabs ────────────────────── */
+.dash-user-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  padding: 0.4rem;
+  flex-shrink: 0;
+}
+
+.dash-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.3rem;
+  border-radius: 0.65rem;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.dash-tab:hover { color: #ccc; background: rgba(255,255,255,0.06); }
+
+.dash-tab-active {
+  background: rgba(167,139,250,0.2);
+  color: #a78bfa;
+  border: 1px solid rgba(167,139,250,0.3);
+}

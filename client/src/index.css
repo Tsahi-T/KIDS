@@ -983,44 +983,72 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   width: 100%;
 }
 
-.scene-wrap {
+/* shared scene box */
+.scene-box {
   background: rgba(255,255,255,0.06);
-  border: 2px solid rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.12);
   border-radius: 1.2rem;
-  padding: 1rem 1.5rem;
-  min-width: 160px;
+  padding: 1rem 1.6rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.15rem;
+  min-width: 170px;
+  min-height: 110px;
 }
-.scene-col { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
-.scene-row { display: flex; flex-direction: row; align-items: center; gap: 0.5rem; }
-.scene-emoji { font-size: 2.8rem; line-height: 1; }
-.scene-emoji-small { font-size: 2.2rem; line-height: 1; }
+.scene-box-row { flex-direction: row; gap: 0.6rem; min-height: 80px; }
 
-.scene-in-box {
+/* emoji sizes */
+.se        { font-size: 2.8rem; line-height: 1; }
+.se.actor  { font-size: 3rem; }
+.se.ref    { font-size: 2.4rem; opacity: 0.9; }
+
+/* ON / UNDER: horizontal surface line between actor and ref */
+.scene-surface {
+  width: 80px;
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  margin: 2px 0;
+}
+
+/* NEXT TO: thin vertical gap line */
+.scene-gap-line {
+  width: 2px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  margin: 0 0.3rem;
+}
+
+/* IN: visible box container */
+.scene-container {
   position: relative;
-  border: 3px solid rgba(255,255,255,0.3);
-  border-radius: 0.6rem;
-  padding: 0.4rem 0.8rem;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-radius: 0.8rem;
+  padding: 0.7rem 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.scene-inside { position: absolute; }
-.scene-behind { opacity: 0.45; position: absolute; transform: scale(0.75); z-index: 0; }
-.scene-behind-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 80px; height: 70px; }
-.scene-behind-wrap .scene-emoji { position: relative; z-index: 1; }
+.scene-container-label {
+  position: absolute;
+  bottom: -1.6rem;
+  font-size: 1.5rem;
+  line-height: 1;
+}
 
 .prep-sentence {
-  font-size: 0.9rem;
-  color: #aaa;
+  font-size: 0.85rem;
+  color: #888;
   text-align: center;
   direction: ltr;
+  margin-top: 0.3rem;
 }
 
 .prep-answers-grid {

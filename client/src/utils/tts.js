@@ -1,10 +1,11 @@
 let currentAudio = null
 
+// Uses StreamElements (Amazon Polly) - free, reliable on all browsers/iOS
 export function speakEnglish(text) {
   if (currentAudio) { currentAudio.pause(); currentAudio = null }
-  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=en-US&client=gtx`
+  const url = `https://api.streamelements.com/kappa/v2/speech?voice=Ivy&text=${encodeURIComponent(text)}`
   const audio = new Audio(url)
-  audio.playbackRate = 0.85
+  audio.volume = 1
   currentAudio = audio
   audio.play().catch(() => {})
 }

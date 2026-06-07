@@ -11,63 +11,53 @@ const ANS_COLORS = ['#FFD93D', '#6BCB77', '#4D96FF', '#FF6B6B']
 
 function Scene({ scene }) {
   const { actor, ref, layout } = scene
+
+  // ON: actor sits on a surface above ref
   if (layout === 'on') return (
-    <div className="scene-wrap">
-      <div className="scene-col">
-        <span className="scene-emoji">{actor}</span>
-        <span className="scene-emoji">{ref}</span>
-      </div>
+    <div className="scene-box">
+      <span className="se actor">{actor}</span>
+      <div className="scene-surface" />
+      <span className="se ref">{ref}</span>
     </div>
   )
+
+  // UNDER: actor is below ref
   if (layout === 'under') return (
-    <div className="scene-wrap">
-      <div className="scene-col">
-        <span className="scene-emoji">{ref}</span>
-        <span className="scene-emoji">{actor}</span>
-      </div>
+    <div className="scene-box">
+      <span className="se ref">{ref}</span>
+      <div className="scene-surface" />
+      <span className="se actor">{actor}</span>
     </div>
   )
-  if (layout === 'right') return (
-    <div className="scene-wrap">
-      <div className="scene-row">
-        <span className="scene-emoji">{ref}</span>
-        <span className="scene-emoji">{actor}</span>
-      </div>
+
+  // NEXT TO: actor beside ref with a gap
+  if (layout === 'next-to') return (
+    <div className="scene-box scene-box-row">
+      <span className="se ref">{ref}</span>
+      <div className="scene-gap-line" />
+      <span className="se actor">{actor}</span>
     </div>
   )
+
+  // IN: actor inside a visible container border, ref is the container label
   if (layout === 'in') return (
-    <div className="scene-wrap">
-      <div className="scene-in-box">
-        <span className="scene-emoji-small">{ref}</span>
-        <span className="scene-emoji scene-inside">{actor}</span>
+    <div className="scene-box">
+      <div className="scene-container">
+        <span className="se actor">{actor}</span>
+        <span className="scene-container-label">{ref}</span>
       </div>
     </div>
   )
-  if (layout === 'behind') return (
-    <div className="scene-wrap">
-      <div className="scene-behind-wrap">
-        <span className="scene-emoji scene-behind">{actor}</span>
-        <span className="scene-emoji">{ref}</span>
-      </div>
-    </div>
-  )
-  if (layout === 'front') return (
-    <div className="scene-wrap">
-      <div className="scene-col">
-        <span className="scene-emoji">{ref}</span>
-        <span className="scene-emoji">{actor}</span>
-      </div>
-    </div>
-  )
+
+  // BETWEEN: actor sandwiched between two refs
   if (layout === 'between') return (
-    <div className="scene-wrap">
-      <div className="scene-row">
-        <span className="scene-emoji">{ref}</span>
-        <span className="scene-emoji">{actor}</span>
-        <span className="scene-emoji">{ref}</span>
-      </div>
+    <div className="scene-box scene-box-row">
+      <span className="se ref">{ref}</span>
+      <span className="se actor">{actor}</span>
+      <span className="se ref">{ref}</span>
     </div>
   )
+
   return null
 }
 

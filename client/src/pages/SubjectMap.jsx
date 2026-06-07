@@ -1,0 +1,87 @@
+import AvatarDisplay from '../components/AvatarDisplay.jsx'
+
+const SUBJECTS = [
+  {
+    id: 'math',
+    icon: '🔢',
+    name: 'חשבון',
+    desc: 'לוח כפל',
+    color1: '#6C63FF',
+    color2: '#4834D4',
+    available: true,
+  },
+  {
+    id: 'hebrew',
+    icon: '📖',
+    name: 'עברית',
+    desc: 'בקרוב...',
+    color1: '#FF6B9D',
+    color2: '#C9184A',
+    available: false,
+  },
+  {
+    id: 'english',
+    icon: '🔤',
+    name: 'English',
+    desc: 'בקרוב...',
+    color1: '#43C59E',
+    color2: '#1A7A5E',
+    available: false,
+  },
+]
+
+export default function SubjectMap({ player, onSelect }) {
+  return (
+    <div className="map-screen">
+
+      {/* header */}
+      <div className="map-header">
+        <div className="map-avatar">
+          <AvatarDisplay avatar={player.avatar} size={38} />
+        </div>
+        <div className="map-greeting">
+          <span className="map-hello">שלום,</span>
+          <span className="map-name">{player.name}!</span>
+        </div>
+        <div className="map-title-text">בחר מקצוע</div>
+      </div>
+
+      {/* subject cards */}
+      <div className="subjects-grid">
+        {SUBJECTS.map(s => (
+          <button
+            key={s.id}
+            className={`subject-card${s.available ? '' : ' locked'}`}
+            style={{ '--c1': s.color1, '--c2': s.color2 }}
+            onClick={() => s.available && onSelect(s.id)}
+            disabled={!s.available}
+          >
+            <div className="subject-glow" />
+            <div className="subject-icon">{s.icon}</div>
+            <div className="subject-name">{s.name}</div>
+            <div className="subject-desc">{s.desc}</div>
+            {!s.available && <div className="subject-lock">🔒</div>}
+          </button>
+        ))}
+      </div>
+
+      {/* decorative stars */}
+      <div className="map-stars" aria-hidden="true">
+        {Array.from({ length: 18 }, (_, i) => (
+          <span
+            key={i}
+            className="map-star"
+            style={{
+              left:  `${(i * 37 + 11) % 95}%`,
+              top:   `${(i * 53 + 7)  % 85}%`,
+              animationDelay: `${(i * 0.4) % 3}s`,
+              fontSize: `${0.5 + (i % 3) * 0.25}rem`,
+              opacity: 0.15 + (i % 4) * 0.06,
+            }}
+          >★</span>
+        ))}
+      </div>
+
+    </div>
+  )
+}

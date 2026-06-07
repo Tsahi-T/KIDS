@@ -1,7 +1,7 @@
 import AvatarDisplay, { isPhoto, photoName } from '../components/AvatarDisplay.jsx'
 
-export default function GameOver({ player, score, total, won, onRestart, onHome }) {
-  const stars  = score >= total ? 3 : score >= Math.ceil(total * 0.7) ? 2 : score >= Math.ceil(total * 0.4) ? 1 : 0
+export default function GameOver({ player, score, total, won, onRestart, onMap, onHome }) {
+  const stars   = score >= total ? 3 : score >= Math.ceil(total * 0.7) ? 2 : score >= Math.ceil(total * 0.4) ? 1 : 0
   const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars)
 
   return (
@@ -20,9 +20,10 @@ export default function GameOver({ player, score, total, won, onRestart, onHome 
       <div className="score-label">תשובות נכונות</div>
 
       <div className="btn-row">
-        <button className="btn-secondary" onClick={onHome}>🏠 בית</button>
+        <button className="btn-secondary" onClick={onMap}>🗺️ מפה</button>
         <button className="start-btn" onClick={onRestart}>🔄 שוב!</button>
       </div>
+      <button className="btn-home-small" onClick={onHome}>🏠 החלף שחקן</button>
     </div>
   )
 }

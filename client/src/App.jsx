@@ -1,15 +1,22 @@
 import { useState } from 'react'
-import NameEntry from './pages/NameEntry.jsx'
-import Game from './pages/Game.jsx'
-import GameOver from './pages/GameOver.jsx'
+import NameEntry   from './pages/NameEntry.jsx'
+import SubjectMap  from './pages/SubjectMap.jsx'
+import Game        from './pages/Game.jsx'
+import GameOver    from './pages/GameOver.jsx'
 
 export default function App() {
-  const [screen, setScreen] = useState('entry')
-  const [player, setPlayer] = useState({ name: '', avatar: '🦊' })
-  const [result, setResult] = useState({ score: 0, total: 10, won: false })
+  const [screen,  setScreen]  = useState('entry')
+  const [player,  setPlayer]  = useState({ name: '', avatar: 'photo:OFEK' })
+  const [subject, setSubject] = useState('math')
+  const [result,  setResult]  = useState({ score: 0, total: 10, won: false })
 
   function handleStart(name, avatar) {
     setPlayer({ name, avatar })
+    setScreen('map')
+  }
+
+  function handleSelect(subj) {
+    setSubject(subj)
     setScreen('game')
   }
 
@@ -20,9 +27,14 @@ export default function App() {
 
   return (
     <div className="app">
-      {screen === 'entry' && <NameEntry onStart={handleStart} />}
+      {screen === 'entry' && (
+        <NameEntry onStart={handleStart} />
+      )}
+      {screen === 'map' && (
+        <SubjectMap player={player} onSelect={handleSelect} />
+      )}
       {screen === 'game' && (
-        <Game key={Date.now()} player={player} onGameOver={handleGameOver} />
+        <Game key={`${subject}-${Date.now()}`} player={player} subject={subject} onGameOver={handleGameOver} />
       )}
       {screen === 'gameover' && (
         <GameOver
@@ -31,6 +43,7 @@ export default function App() {
           total={result.total}
           won={result.won}
           onRestart={() => setScreen('game')}
+          onMap={() => setScreen('map')}
           onHome={() => setScreen('entry')}
         />
       )}

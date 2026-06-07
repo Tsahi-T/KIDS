@@ -167,6 +167,132 @@ html, body {
 .start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(167,139,250,0.5); }
 .start-btn:active { transform: translateY(0); }
 
+/* ── Subject Map ────────────────────────────────────── */
+.map-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 1rem;
+  overflow: hidden;
+  gap: 1.5rem;
+}
+
+.map-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  z-index: 1;
+}
+
+.map-avatar {
+  margin-bottom: 0.3rem;
+}
+
+.map-greeting {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+
+.map-hello { font-size: 1rem; color: #888; }
+.map-name  { font-size: 1.5rem; font-weight: 900; color: white; }
+
+.map-title-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.subjects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 340px;
+  z-index: 1;
+}
+
+.subject-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 1.2rem;
+  border: none;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white;
+  cursor: pointer;
+  text-align: right;
+  font-family: 'Heebo', sans-serif;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+
+.subject-card:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+}
+.subject-card:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.subject-card.locked {
+  filter: saturate(0.4) brightness(0.6);
+  cursor: not-allowed;
+}
+
+.subject-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.18), transparent 70%);
+  pointer-events: none;
+}
+
+.subject-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.subject-name {
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.subject-desc {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 0.2rem;
+}
+
+.subject-lock {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+/* floating background stars */
+.map-stars { position: absolute; inset: 0; pointer-events: none; }
+.map-star {
+  position: absolute;
+  color: white;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: inherit; transform: scale(1); }
+  50%       { opacity: 0.05;   transform: scale(1.3); }
+}
+
 /* ── Game Screen ────────────────────────────────────── */
 .game-screen {
   width: 100%;
@@ -412,3 +538,15 @@ html, body {
 .btn-secondary:hover { border-color: #a78bfa; color: #a78bfa; }
 
 .btn-row .start-btn { flex: 1.5; }
+
+.btn-home-small {
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 0.85rem;
+  font-family: 'Heebo', sans-serif;
+  cursor: pointer;
+  padding: 0.3rem;
+}
+.btn-home-small:hover { color: #888; }

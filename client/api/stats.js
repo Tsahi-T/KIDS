@@ -4,7 +4,10 @@ async function loadProfile(userId) {
   try {
     const { blobs } = await list({ prefix: `users/${userId}.json`, limit: 1 })
     if (!blobs.length) return { userId, coins: 0, games: {} }
-    const r = await fetch(blobs[0].url, { cache: 'no-store' })
+    const r = await fetch(blobs[0].url, {
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    })
     return await r.json()
   } catch {
     return { userId, coins: 0, games: {} }
@@ -13,7 +16,6 @@ async function loadProfile(userId) {
 
 async function saveProfile(userId, profile) {
   await put(`users/${userId}.json`, JSON.stringify(profile), {
-    access: 'public',
     addRandomSuffix: false,
   })
 }

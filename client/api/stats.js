@@ -16,6 +16,7 @@ async function loadProfile(userId) {
 
 async function saveProfile(userId, profile) {
   await put(`users/${userId}.json`, JSON.stringify(profile), {
+    access: 'private',
     addRandomSuffix: false,
   })
 }

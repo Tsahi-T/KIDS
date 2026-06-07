@@ -1,10 +1,15 @@
 import { list, put } from '@vercel/blob'
 
+const TOKEN = process.env.BLOB_READ_WRITE_TOKEN
+
 async function loadProfile(userId) {
   try {
     const { blobs } = await list({ prefix: `users/${userId}.json`, limit: 1 })
     if (!blobs.length) return { userId, coins: 0, games: {} }
-    const r = await fetch(blobs[0].url, { cache: 'no-store' })
+    const r = await fetch(blobs[0].url, {
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${TOKEN}` },
+    })
     if (!r.ok) return { userId, coins: 0, games: {} }
     return await r.json()
   } catch {
@@ -14,7 +19,7 @@ async function loadProfile(userId) {
 
 async function saveProfile(userId, profile) {
   await put(`users/${userId}.json`, JSON.stringify(profile), {
-    access: 'public',
+    access: 'private',
     addRandomSuffix: false,
     allowOverwrite: true,
   })
@@ -47,11 +52,7 @@ export default async function handler(req, res) {
 
     if (coinDelta > 0) profile.coins = (profile.coins || 0) + coinDelta
 
-    try {
-      await saveProfile(user, profile)
-    } catch (e) {
-      return res.status(500).json({ putError: e?.message ?? String(e) })
-    }
+    await saveProfile(user, profile)
     return res.json({ ok: true, coins: profile.coins })
   }
 

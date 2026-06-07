@@ -1,13 +1,17 @@
 import { list } from '@vercel/blob'
 
-const FAMILY = ['ofek', 'ori', 'tsahy']
-const NAMES  = { ofek: 'אופק', ori: 'אורי', tsahy: 'צאהי' }
+const TOKEN   = process.env.BLOB_READ_WRITE_TOKEN
+const FAMILY  = ['ofek', 'ori', 'tsahy']
+const NAMES   = { ofek: 'אופק', ori: 'אורי', tsahy: 'צאהי' }
 
 async function loadProfile(userId) {
   try {
     const { blobs } = await list({ prefix: `users/${userId}.json`, limit: 1 })
     if (!blobs.length) return { userId, coins: 0, games: {} }
-    const r = await fetch(blobs[0].url, { cache: 'no-store' })
+    const r = await fetch(blobs[0].url, {
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${TOKEN}` },
+    })
     if (!r.ok) return { userId, coins: 0, games: {} }
     return await r.json()
   } catch {

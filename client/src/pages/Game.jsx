@@ -11,11 +11,13 @@ const GROUND_Y   = 255
 const CHAR_X     = 110
 const GRAVITY    = 0.45
 const JUMP_VY    = -15
-const BASE_SPEED = 2.8
+const BASE_SPEED = 3.4          // slightly faster overall
 const OBS_W      = 32
 const MAX_OBS    = 10
-const Q_DIST     = 100   // px ahead of char when question triggers
-const WARN_DIST  = 210   // px ahead when warning starts
+const Q_DIST     = 100
+const WARN_DIST  = 210
+const GAP_MIN    = 130          // minimum px between obstacles
+const GAP_RANGE  = 160          // random extra px (total: 130–290)
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 function makeObstacle() {
@@ -148,26 +150,35 @@ function drawCharacter(ctx, char, avatar, frame, frozen, photos) {
   ctx.beginPath(); ctx.arc(x + 28, fy - 32 - armSwing, 5, 0, Math.PI * 2); ctx.fill()
 
   // ── head ───────────────────────────────────────────────────────────────────
-  const headCY = fy - 76   // center-y of the head circle
-  const headR  = 24
+  const headR  = 30                  // larger head for better visibility
+  const headCY = fy - 52 - headR + 4 // sits on top of body with slight overlap
 
   if (isPhoto(avatar) && photos) {
     const img = photos[photoName(avatar)]
     if (img && img.complete && img.naturalWidth > 0) {
-      // crop a square from top-center of the photo (where the face is)
-      const sw = img.naturalWidth
-      const sh = sw                       // square crop
-      const sy = Math.max(0, (img.naturalHeight - sh) * 0.05)  // slight top bias
+      const iw = img.naturalWidth
+      const ih = img.naturalHeight
+      // Draw only the inner 80% of the processed image (skip background corners)
+      const margin = iw * 0.1
+      const sw = iw - margin * 2
+      const sh = sw
+      const sx = margin
+      const sy = margin * 0.6          // face is slightly higher in portrait shots
       ctx.save()
-      ctx.beginPath(); ctx.arc(x, headCY, headR, 0, Math.PI * 2); ctx.clip()
-      ctx.drawImage(img, 0, sy, sw, sh, x - headR, headCY - headR, headR * 2, headR * 2)
+      ctx.beginPath()
+      ctx.arc(x, headCY, headR, 0, Math.PI * 2)
+      ctx.clip()
+      ctx.drawImage(img, sx, sy, sw, sh, x - headR, headCY - headR, headR * 2, headR * 2)
       ctx.restore()
-      // white border ring
-      ctx.strokeStyle = 'white'; ctx.lineWidth = 2.5
-      ctx.beginPath(); ctx.arc(x, headCY, headR, 0, Math.PI * 2); ctx.stroke()
+      // white ring
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)'
+      ctx.lineWidth = 2.5
+      ctx.beginPath()
+      ctx.arc(x, headCY, headR, 0, Math.PI * 2)
+      ctx.stroke()
     }
   } else {
-    ctx.font = '46px serif'
+    ctx.font = '52px serif'
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
     ctx.fillText(avatar, x, headCY)
   }
@@ -302,7 +313,7 @@ export default function Game({ player, onGameOver }) {
           // spawn
           if (s.spawned < MAX_OBS) {
             const last = s.obstacles[s.obstacles.length - 1]
-            const gap  = 300 + Math.random() * 100
+            const gap  = GAP_MIN + Math.random() * GAP_RANGE
             if (!last || last.x < W - gap) {
               s.obstacles.push(makeObstacle())
               s.spawned++

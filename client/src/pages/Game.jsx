@@ -184,14 +184,24 @@ function drawCharacter(ctx, char, avatar, frame, frozen, photos) {
   }
 }
 
-function drawHUD(ctx, lives, score) {
+function drawHUD(ctx, lives, score, coins) {
+  // score pill (left)
   ctx.fillStyle = 'rgba(0,0,0,.42)'
-  roundRect(ctx, 10, 8, 118, 36, 9); ctx.fill()
+  roundRect(ctx, 10, 8, 90, 36, 9); ctx.fill()
   ctx.fillStyle = 'white'
-  ctx.font = 'bold 19px Heebo, Arial, sans-serif'
+  ctx.font = 'bold 18px Heebo, Arial, sans-serif'
   ctx.textAlign = 'right'; ctx.textBaseline = 'middle'
-  ctx.fillText(`✓ ${score}`, 122, 26)
+  ctx.fillText(`✓ ${score}`, 94, 26)
 
+  // coin pill (center)
+  ctx.fillStyle = 'rgba(0,0,0,.42)'
+  roundRect(ctx, W / 2 - 52, 8, 104, 36, 9); ctx.fill()
+  ctx.fillStyle = '#FFD700'
+  ctx.font = 'bold 18px Heebo, Arial, sans-serif'
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+  ctx.fillText(`🪙 ${coins}`, W / 2, 26)
+
+  // hearts (right)
   for (let i = 0; i < 3; i++) {
     ctx.fillStyle = i < lives ? '#E53935' : 'rgba(255,255,255,.2)'
     const hx = W - 22 - i * 33, hy = 26, r = 10
@@ -217,6 +227,7 @@ export default function Game({ player, onGameOver }) {
   const [question,       setQuestion]       = useState(null)
   const [answerDisabled, setAnswerDisabled] = useState(false)
   const [feedback,       setFeedback]       = useState(null)
+  const [coinPop,        setCoinPop]        = useState(null) // { id, amount }
 
   function createState() {
     return {
@@ -227,6 +238,7 @@ export default function Game({ player, onGameOver }) {
       obstacles: [],
       clouds:  Array.from({ length: 5 }, (_, i) => makeCloud(60 + i * (W / 5))),
       score:   0,
+      coins:   0,
       lives:   3,
       spawned: 0,
     }
@@ -251,13 +263,16 @@ export default function Game({ player, onGameOver }) {
 
     if (correct) {
       s.score++
+      s.coins += 10
       s.char.vy      = JUMP_VY
       s.char.onGround = false
       s.speed        = BASE_SPEED
       setFeedback('correct')
+      setCoinPop({ id: Date.now(), amount: 10 })
       setShowQ(false)
       s.phase = 'animating'
       setTimeout(() => setFeedback(null), 900)
+      setTimeout(() => setCoinPop(null), 1100)
     } else {
       applyWrong(s)
     }
@@ -381,7 +396,7 @@ export default function Game({ player, onGameOver }) {
       const flash = c.hitFlash > 0 && Math.floor(c.hitFlash / 6) % 2 === 1
       if (!flash) drawCharacter(ctx, c, player.avatar, s.frame, s.phase === 'question', photosRef.current)
 
-      drawHUD(ctx, s.lives, s.score)
+      drawHUD(ctx, s.lives, s.score, s.coins)
 
       rafRef.current = requestAnimationFrame(tick)
     }
@@ -406,6 +421,11 @@ export default function Game({ player, onGameOver }) {
         {feedback && (
           <div className={`feedback feedback-${feedback}`}>
             {feedback === 'correct' ? '✓ נכון!' : '✗ טעות!'}
+          </div>
+        )}
+        {coinPop && (
+          <div key={coinPop.id} className="coin-float">
+            🪙 +{coinPop.amount}
           </div>
         )}
         {showQ && question && (

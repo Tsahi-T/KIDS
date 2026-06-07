@@ -1,0 +1,336 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  direction: rtl;
+  font-family: 'Heebo', system-ui, sans-serif;
+  background: #0f0e17;
+  color: white;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Entry Screen ──────────────────────────────────── */
+.entry-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  max-width: 380px;
+  width: 100%;
+}
+
+.entry-logo {
+  font-size: 3.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.entry-sub {
+  font-size: 1rem;
+  color: #888;
+  margin-bottom: 1.8rem;
+  margin-top: 0.25rem;
+}
+
+.field-label {
+  align-self: flex-start;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #aaa;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.name-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 1.2rem;
+  font-family: 'Heebo', sans-serif;
+  border: 2px solid #333;
+  border-radius: 0.9rem;
+  background: rgba(255,255,255,0.07);
+  color: white;
+  text-align: center;
+  outline: none;
+  margin-bottom: 1.2rem;
+  transition: border-color 0.2s;
+}
+.name-input:focus { border-color: #a78bfa; }
+.name-input::placeholder { color: #555; }
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-btn {
+  font-size: 2rem;
+  padding: 0.5rem 0;
+  border-radius: 0.75rem;
+  border: 2.5px solid transparent;
+  background: rgba(255,255,255,0.07);
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.2;
+}
+.avatar-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.12); }
+.avatar-btn.selected {
+  border-color: #a78bfa;
+  background: rgba(167,139,250,0.2);
+  transform: scale(1.12);
+}
+
+.start-btn {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  border: none;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, #a78bfa, #f472b6);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(167,139,250,0.4);
+}
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(167,139,250,0.5); }
+.start-btn:active { transform: translateY(0); }
+
+/* ── Game Screen ────────────────────────────────────── */
+.game-screen {
+  width: 100%;
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.game-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.25rem;
+}
+
+.player-tag {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.game-hint {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.game-canvas {
+  display: block;
+  width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+/* ── Question Modal ─────────────────────────────────── */
+.question-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+  z-index: 10;
+  animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.question-box {
+  background: #1e1e2e;
+  border: 2px solid #333;
+  border-radius: 1.4rem;
+  padding: 1.4rem 1.4rem 1.2rem;
+  width: 88%;
+  max-width: 340px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+
+.question-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.question-text {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #e2e2ff;
+  margin-bottom: 1.1rem;
+  direction: ltr;
+  letter-spacing: -1px;
+}
+
+.answers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.answer-btn {
+  padding: 0.85rem 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 900;
+  font-family: 'Heebo', sans-serif;
+  border: none;
+  border-radius: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.1s;
+  direction: ltr;
+  color: #111;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+}
+.answer-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); }
+.answer-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: none; }
+.answer-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Feedback Overlay ───────────────────────────────── */
+.feedback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 20;
+  font-size: 3rem;
+  font-weight: 900;
+  border-radius: 1rem;
+  animation: feedbackPop 0.85s ease forwards;
+}
+
+.feedback-correct { background: rgba(74,222,128,0.25); color: #4ade80; }
+.feedback-wrong   { background: rgba(248,113,113,0.25); color: #f87171; }
+
+@keyframes feedbackPop {
+  0%   { opacity: 0; transform: scale(0.6); }
+  25%  { opacity: 1; transform: scale(1.15); }
+  60%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; }
+}
+
+/* ── Game Over Screen ───────────────────────────────── */
+.gameover-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.gameover-avatar { font-size: 5rem; margin-bottom: 0.5rem; }
+
+.gameover-screen h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 0.2rem;
+}
+
+.gameover-name {
+  font-size: 1.1rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.stars-row {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 4px;
+}
+
+.score-display {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.score-total {
+  font-size: 2rem;
+  opacity: 0.6;
+}
+
+.score-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.btn-row {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  border: 2px solid #444;
+  border-radius: 0.9rem;
+  background: transparent;
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-secondary:hover { border-color: #a78bfa; color: #a78bfa; }
+
+.btn-row .start-btn { flex: 1.5; }

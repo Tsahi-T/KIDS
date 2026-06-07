@@ -24,6 +24,16 @@ export default function EnglishGame({ player, onGameOver }) {
   const timerRef   = useRef(null)
   const lockedRef  = useRef(false)
 
+  function speak(word) {
+    if (!window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+    const utter  = new SpeechSynthesisUtterance(word)
+    utter.lang   = 'en-US'
+    utter.rate   = 0.8
+    utter.pitch  = 1.1
+    window.speechSynthesis.speak(utter)
+  }
+
   function nextQuestion() {
     lockedRef.current = false
     setSelected(null)
@@ -31,6 +41,7 @@ export default function EnglishGame({ player, onGameOver }) {
     usedRef.current.add(q.index)
     setQuestion(q)
     setRemaining(TIME_LIMIT)
+    setTimeout(() => speak(q.word), 300)
   }
 
   // start first question
@@ -137,6 +148,9 @@ export default function EnglishGame({ player, onGameOver }) {
 
       {/* word + timer */}
       <div className="eng-word-row">
+        <button className="speak-btn" onClick={() => speak(question.word)} title="השמע מילה">
+          🔊
+        </button>
         <div className={`eng-word${urgent ? ' urgent-word' : ''}`}>{question.word}</div>
         <div className="eng-timer">
           <svg width="48" height="48" viewBox="0 0 48 48">

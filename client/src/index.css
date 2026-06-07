@@ -708,6 +708,23 @@ html, body {
 
 .eng-word.urgent-word { color: #f87171; }
 
+.speak-btn {
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s, background 0.15s;
+}
+.speak-btn:hover  { background: rgba(255,255,255,0.15); transform: scale(1.1); }
+.speak-btn:active { transform: scale(0.92); }
+
 .eng-timer {
   position: relative;
   width: 48px;

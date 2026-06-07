@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react'
 import AvatarDisplay from '../components/AvatarDisplay.jsx'
+import { getCoins } from '../utils/coins.js'
 
 const SUBJECTS = [
   {
@@ -31,6 +33,12 @@ const SUBJECTS = [
 ]
 
 export default function SubjectMap({ player, onSelect }) {
+  const [coins, setCoins] = useState(0)
+
+  useEffect(() => {
+    setCoins(getCoins())
+  }, [])
+
   return (
     <div className="map-screen">
 
@@ -42,6 +50,10 @@ export default function SubjectMap({ player, onSelect }) {
         <div className="map-greeting">
           <span className="map-hello">שלום,</span>
           <span className="map-name">{player.name}!</span>
+        </div>
+        <div className="map-coins-badge">
+          <span>🪙</span>
+          <span>{coins}</span>
         </div>
         <div className="map-title-text">בחר מקצוע</div>
       </div>
@@ -58,8 +70,10 @@ export default function SubjectMap({ player, onSelect }) {
           >
             <div className="subject-glow" />
             <div className="subject-icon">{s.icon}</div>
-            <div className="subject-name">{s.name}</div>
-            <div className="subject-desc">{s.desc}</div>
+            <div className="subject-name-col">
+              <div className="subject-name">{s.name}</div>
+              <div className="subject-desc">{s.desc}</div>
+            </div>
             {!s.available && <div className="subject-lock">🔒</div>}
           </button>
         ))}

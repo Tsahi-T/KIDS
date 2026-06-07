@@ -87,7 +87,7 @@ export default function PrepositionsGame({ player, onGameOver }) {
     qRef.current = q
     setQuestion(q)
     setRemaining(TIME_LIMIT)
-    setTimeout(() => speakEnglish(q.correct), 300)
+    setTimeout(() => speakEnglish(q.scene.sentence.replace('___', q.correct)), 300)
   }
 
   useEffect(() => { nextQuestion() }, [])
@@ -143,7 +143,7 @@ export default function PrepositionsGame({ player, onGameOver }) {
       setCoins(coinsRef.current)
       setCoinPop(Date.now())
       setTimeout(() => setCoinPop(null), 1100)
-      speakEnglish(ans)
+      speakEnglish(qRef.current.scene.sentence.replace('___', ans))
     } else {
       livesRef.current = Math.max(0, livesRef.current - 1)
       setLives(livesRef.current)
@@ -185,7 +185,7 @@ export default function PrepositionsGame({ player, onGameOver }) {
         <Scene scene={question.scene} />
         <div className="prep-sentence">{question.scene.sentence}</div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'center' }}>
-          <button className="speak-btn" onClick={() => speakEnglish(question.correct)}>🔊</button>
+          <button className="speak-btn" onClick={() => speakEnglish(question.scene.sentence.replace('___', question.correct))}>🔊</button>
           <div className="eng-timer" style={{ position: 'relative' }}>
             <svg width="48" height="48" viewBox="0 0 48 48">
               <circle cx="24" cy="24" r={r} fill="none" stroke="#2a2a3e" strokeWidth="4" />

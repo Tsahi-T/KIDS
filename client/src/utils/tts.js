@@ -1,11 +1,10 @@
-let currentAudio = null
+let current = null
 
-// Uses StreamElements (Amazon Polly) - free, reliable on all browsers/iOS
 export function speakEnglish(text) {
-  if (currentAudio) { currentAudio.pause(); currentAudio = null }
-  const url = `https://api.streamelements.com/kappa/v2/speech?voice=Ivy&text=${encodeURIComponent(text)}`
-  const audio = new Audio(url)
+  if (current) { current.pause(); current = null }
+  // /api/tts is a Vercel serverless function that proxies Google Translate TTS
+  const audio = new Audio(`/api/tts?text=${encodeURIComponent(text)}`)
   audio.volume = 1
-  currentAudio = audio
+  current = audio
   audio.play().catch(() => {})
 }

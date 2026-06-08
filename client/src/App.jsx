@@ -18,6 +18,19 @@ import Dashboard        from './pages/Dashboard.jsx'
 import Leaderboard      from './pages/Leaderboard.jsx'
 import { getCoins, setCoins } from './utils/coins.js'
 
+// All playable games: { subject, subGame? }
+const ALL_GAMES = [
+  { subject: 'math'    },
+  { subject: 'english', subGame: 'vocab'        },
+  { subject: 'english', subGame: 'numbers'      },
+  { subject: 'english', subGame: 'prepositions' },
+  { subject: 'english', subGame: 'colors'       },
+  { subject: 'hebrew',  subGame: 'flash'        },
+  { subject: 'hebrew',  subGame: 'reading'      },
+  { subject: 'general', subGame: 'months'       },
+  { subject: 'general', subGame: 'flags'        },
+]
+
 const GAME_NAMES = {
   math:         'לוח כפל 🔢',
   vocab:        'מילים ותמונות 🖼️',
@@ -48,6 +61,23 @@ export default function App() {
     // take max(localStorage, server) so partial-exit coins are never lost
     if (profile) setCoins(Math.max(getCoins(), profile.coins ?? 0))
     setScreen('map')
+  }
+
+  function handleRandomGame() {
+    const pick = ALL_GAMES[Math.floor(Math.random() * ALL_GAMES.length)]
+    setSubject(pick.subject)
+    if (pick.subGame) {
+      gameIdRef.current      = pick.subGame
+      coinsBeforeRef.current = getCoins()
+      setSubGame(pick.subGame)
+      setGameName(GAME_NAMES[pick.subGame] ?? pick.subGame)
+    } else {
+      gameIdRef.current      = 'math'
+      coinsBeforeRef.current = getCoins()
+      setGameName(GAME_NAMES.math)
+    }
+    setShowExitConfirm(false)
+    setScreen('game')
   }
 
   function handleSubjectSelect(subj) {
@@ -111,6 +141,7 @@ export default function App() {
           player={player}
           userProfile={userProfile}
           onSelect={handleSubjectSelect}
+          onRandom={handleRandomGame}
           onDashboard={() => setScreen('dashboard')}
           onLeaderboard={() => setScreen('leaderboard')}
           onHome={() => setScreen('entry')}

@@ -41,8 +41,15 @@ const SUBJECTS = [
   },
 ]
 
-export default function SubjectMap({ player, userProfile, onSelect, onDashboard, onLeaderboard, onHome }) {
-  const [coins, setCoins] = useState(0)
+export default function SubjectMap({ player, userProfile, onSelect, onRandom, onDashboard, onLeaderboard, onHome }) {
+  const [coins,    setCoins]    = useState(0)
+  const [rolling,  setRolling]  = useState(false)
+
+  function handleRandom() {
+    if (rolling) return
+    setRolling(true)
+    setTimeout(() => { setRolling(false); onRandom() }, 700)
+  }
 
   useEffect(() => {
     setCoins(getCoins())
@@ -94,6 +101,16 @@ export default function SubjectMap({ player, userProfile, onSelect, onDashboard,
           </button>
         ))}
       </div>
+
+      {/* random game button */}
+      <button
+        className={`random-game-btn${rolling ? ' rolling' : ''}`}
+        onClick={handleRandom}
+        disabled={rolling}
+      >
+        <span className="random-dice">{rolling ? '🎲' : '🎲'}</span>
+        <span className="random-label">הגרל משחק!</span>
+      </button>
 
       {/* decorative stars */}
       <div className="map-stars" aria-hidden="true">

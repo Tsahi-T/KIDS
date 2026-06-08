@@ -24,7 +24,7 @@ const GAME_COLORS = {
 const FAMILY_USERS = [
   { id: 'ofek',  label: 'אופק', avatar: 'photo:OFEK'  },
   { id: 'ori',   label: 'אורי', avatar: 'photo:ORI'   },
-  { id: 'tsahy', label: 'צאהי', avatar: 'photo:TSAHY' },
+  { id: 'tsahy', label: 'צחי', avatar: 'photo:TSAHY' },
 ]
 
 function fmt(isoDate) {

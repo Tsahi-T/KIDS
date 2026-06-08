@@ -4,7 +4,7 @@ import AvatarDisplay from '../components/AvatarDisplay.jsx'
 const FAMILY = [
   { id: 'ofek',  avatar: 'photo:OFEK',  label: 'אופק' },
   { id: 'ori',   avatar: 'photo:ORI',   label: 'אורי' },
-  { id: 'tsahy', avatar: 'photo:TSAHY', label: 'צאהי' },
+  { id: 'tsahy', avatar: 'photo:TSAHY', label: 'צחי' },
 ]
 
 const EMOJIS = ['🦊', '🐸', '🐼', '🦁', '🐯', '🦄', '🐲', '🚀', '🐙', '🦋', '🐬', '🦖']

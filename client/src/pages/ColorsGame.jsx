@@ -147,8 +147,7 @@ export default function ColorsGame({ player, onGameOver }) {
             <button className="speak-btn" onClick={() => speakEnglish(question.correct.word)} title="השמע מילה">
               🔊
             </button>
-            <div className={`eng-word${urgent ? ' urgent-word' : ''}`}
-                 style={{ color: question.correct.hex, textShadow: '0 0 12px rgba(0,0,0,0.5)' }}>
+            <div className={`eng-word${urgent ? ' urgent-word' : ''}`}>
               {question.correct.word}
             </div>
           </>

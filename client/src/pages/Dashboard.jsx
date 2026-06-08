@@ -10,6 +10,7 @@ const GAME_LABELS = {
   flags:        'דגלי מדינות 🌍',
   colors:       'צבעים 🎨',
   flash:        'הבזק מילים ⚡',
+  reading:      'קרא ובחר 🖼️',
 }
 
 const GAME_COLORS = {
@@ -21,6 +22,7 @@ const GAME_COLORS = {
   flags:        '#3B82F6',
   colors:       '#A855F7',
   flash:        '#FF6B9D',
+  reading:      '#F59E0B',
 }
 
 const FAMILY_USERS = [

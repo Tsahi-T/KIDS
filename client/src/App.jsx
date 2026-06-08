@@ -10,6 +10,7 @@ import PrepositionsGame from './pages/PrepositionsGame.jsx'
 import ColorsGame      from './pages/ColorsGame.jsx'
 import HebrewMap       from './pages/HebrewMap.jsx'
 import FlashGame       from './pages/FlashGame.jsx'
+import ReadingGame     from './pages/ReadingGame.jsx'
 import MonthsGame       from './pages/MonthsGame.jsx'
 import FlagsGame        from './pages/FlagsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
@@ -26,6 +27,7 @@ const GAME_NAMES = {
   flags:        'דגלי מדינות 🌍',
   colors:       'צבעים 🎨',
   flash:        'הבזק מילים ⚡',
+  reading:      'קרא ובחר 🖼️',
 }
 
 export default function App() {
@@ -142,6 +144,9 @@ export default function App() {
       )}
       {screen === 'game' && subject === 'hebrew' && subGame === 'flash' && (
         <FlashGame key={`flash-${Date.now()}`} player={player} onGameOver={handleGameOver} />
+      )}
+      {screen === 'game' && subject === 'hebrew' && subGame === 'reading' && (
+        <ReadingGame key={`reading-${Date.now()}`} player={player} onGameOver={handleGameOver} />
       )}
       {screen === 'game' && subject === 'general' && subGame === 'months' && (
         <MonthsGame key={`months-${Date.now()}`} player={player} onGameOver={handleGameOver} />

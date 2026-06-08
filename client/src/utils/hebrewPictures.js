@@ -1,0 +1,103 @@
+// ── Item bank ─────────────────────────────────────────────────────────
+// Each item: { text, emojis: string[], distractors: string[][] }
+// emojis       = the correct answer (1–3 emojis shown side by side)
+// distractors  = exactly 3 wrong answers, each an array of emojis
+
+export const ITEMS = [
+
+  // ── Single words: animals ─────────────────────────────────────────
+  { text: 'כלב',      emojis: ['🐶'], distractors: [['🐱'], ['🐰'], ['🐸']] },
+  { text: 'חתול',     emojis: ['🐱'], distractors: [['🐶'], ['🦊'], ['🐭']] },
+  { text: 'פרה',      emojis: ['🐮'], distractors: [['🐷'], ['🐑'], ['🐴']] },
+  { text: 'סוס',      emojis: ['🐴'], distractors: [['🐮'], ['🦒'], ['🦓']] },
+  { text: 'ציפור',    emojis: ['🐦'], distractors: [['🦋'], ['🐠'], ['🐸']] },
+  { text: 'דג',       emojis: ['🐟'], distractors: [['🐬'], ['🦀'], ['🐙']] },
+  { text: 'ארנב',     emojis: ['🐰'], distractors: [['🐭'], ['🐹'], ['🐱']] },
+  { text: 'צב',       emojis: ['🐢'], distractors: [['🐊'], ['🦎'], ['🐸']] },
+  { text: 'פיל',      emojis: ['🐘'], distractors: [['🦏'], ['🦛'], ['🐪']] },
+  { text: 'אריה',     emojis: ['🦁'], distractors: [['🐯'], ['🐻'], ['🦊']] },
+  { text: 'פרפר',     emojis: ['🦋'], distractors: [['🐝'], ['🐞'], ['🦗']] },
+  { text: 'קוף',      emojis: ['🐵'], distractors: [['🦊'], ['🐻'], ['🦝']] },
+  { text: 'דב',       emojis: ['🐻'], distractors: [['🦁'], ['🐺'], ['🦊']] },
+  { text: 'פינגווין', emojis: ['🐧'], distractors: [['🦉'], ['🦅'], ['🦢']] },
+
+  // ── Single words: food ────────────────────────────────────────────
+  { text: 'תפוח',     emojis: ['🍎'], distractors: [['🍊'], ['🍋'], ['🍇']] },
+  { text: 'בננה',     emojis: ['🍌'], distractors: [['🍋'], ['🍑'], ['🌽']] },
+  { text: 'עוגה',     emojis: ['🎂'], distractors: [['🍪'], ['🍩'], ['🧁']] },
+  { text: 'גלידה',    emojis: ['🍦'], distractors: [['🧁'], ['🍭'], ['🍬']] },
+  { text: 'לחם',      emojis: ['🍞'], distractors: [['🥐'], ['🥨'], ['🫓']] },
+  { text: 'פיצה',     emojis: ['🍕'], distractors: [['🌮'], ['🍔'], ['🥙']] },
+  { text: 'ביצה',     emojis: ['🥚'], distractors: [['🍳'], ['🧀'], ['🥛']] },
+  { text: 'גזר',      emojis: ['🥕'], distractors: [['🌽'], ['🥦'], ['🫑']] },
+  { text: 'תות',      emojis: ['🍓'], distractors: [['🍒'], ['🍇'], ['🫐']] },
+  { text: 'אבטיח',    emojis: ['🍉'], distractors: [['🍈'], ['🥝'], ['🍑']] },
+
+  // ── Single words: nature / objects ───────────────────────────────
+  { text: 'שמש',      emojis: ['☀️'], distractors: [['🌙'], ['⭐'], ['🌈']] },
+  { text: 'ירח',      emojis: ['🌙'], distractors: [['☀️'], ['⭐'], ['☁️']] },
+  { text: 'כוכב',     emojis: ['⭐'], distractors: [['🌙'], ['☀️'], ['✨']] },
+  { text: 'ענן',      emojis: ['☁️'], distractors: [['🌧️'], ['⛅'], ['🌫️']] },
+  { text: 'גשם',      emojis: ['🌧️'], distractors: [['❄️'], ['🌪️'], ['☁️']] },
+  { text: 'שלג',      emojis: ['❄️'], distractors: [['🌧️'], ['💧'], ['☁️']] },
+  { text: 'עץ',       emojis: ['🌳'], distractors: [['🌿'], ['🌵'], ['🌾']] },
+  { text: 'פרח',      emojis: ['🌸'], distractors: [['🌹'], ['🌻'], ['🌷']] },
+  { text: 'ים',       emojis: ['🌊'], distractors: [['💧'], ['🏖️'], ['🐟']] },
+  { text: 'הר',       emojis: ['⛰️'], distractors: [['🌋'], ['🏔️'], ['🪨']] },
+  { text: 'כדור',     emojis: ['⚽'], distractors: [['🎈'], ['🏀'], ['🎾']] },
+  { text: 'ספר',      emojis: ['📚'], distractors: [['📓'], ['📰'], ['📝']] },
+  { text: 'בית',      emojis: ['🏠'], distractors: [['🏢'], ['🏫'], ['⛺']] },
+  { text: 'מכונית',   emojis: ['🚗'], distractors: [['🚕'], ['🚙'], ['🏎️']] },
+
+  // ── Single words: family / people ────────────────────────────────
+  { text: 'ילד',      emojis: ['👦'], distractors: [['👧'], ['👶'], ['🧑']] },
+  { text: 'ילדה',     emojis: ['👧'], distractors: [['👦'], ['👶'], ['👩']] },
+  { text: 'אמא',      emojis: ['👩'], distractors: [['👨'], ['👵'], ['👧']] },
+  { text: 'אבא',      emojis: ['👨'], distractors: [['👩'], ['👴'], ['👦']] },
+  { text: 'סבא',      emojis: ['👴'], distractors: [['👵'], ['👨'], ['🧔']] },
+  { text: 'סבתא',     emojis: ['👵'], distractors: [['👴'], ['👩'], ['🧓']] },
+  { text: 'תינוק',    emojis: ['👶'], distractors: [['👦'], ['👧'], ['🧒']] },
+
+  // ── Pairs: subject + object ───────────────────────────────────────
+  { text: 'ילד וכדור',       emojis: ['👦','⚽'], distractors: [['👧','⚽'], ['👦','🎈'], ['👦','🏀']] },
+  { text: 'ילדה ופרח',       emojis: ['👧','🌸'], distractors: [['👦','🌸'], ['👧','🌹'], ['👧','🌳']] },
+  { text: 'אמא ועוגה',       emojis: ['👩','🎂'], distractors: [['👨','🎂'], ['👩','🍕'], ['👩','🍪']] },
+  { text: 'אבא וספר',        emojis: ['👨','📚'], distractors: [['👩','📚'], ['👨','📝'], ['👴','📚']] },
+  { text: 'סבא וכלב',        emojis: ['👴','🐶'], distractors: [['👵','🐶'], ['👴','🐱'], ['👨','🐶']] },
+  { text: 'ילד ורכבת',       emojis: ['👦','🚂'], distractors: [['👦','🚗'], ['👧','🚂'], ['👦','✈️']] },
+  { text: 'ילדה ותפוח',      emojis: ['👧','🍎'], distractors: [['👦','🍎'], ['👧','🍌'], ['👧','🍊']] },
+  { text: 'כלב וחתול',       emojis: ['🐶','🐱'], distractors: [['🐶','🐰'], ['🐱','🐹'], ['🦊','🐱']] },
+  { text: 'שמש וענן',        emojis: ['☀️','☁️'], distractors: [['🌙','☁️'], ['☀️','🌧️'], ['⭐','☁️']] },
+  { text: 'ירח וכוכב',       emojis: ['🌙','⭐'], distractors: [['☀️','⭐'], ['🌙','☁️'], ['🌙','✨']] },
+  { text: 'בית ועץ',         emojis: ['🏠','🌳'], distractors: [['🏢','🌳'], ['🏠','🌵'], ['🏠','🌸']] },
+  { text: 'חתול ודג',        emojis: ['🐱','🐟'], distractors: [['🐶','🐟'], ['🐱','🐠'], ['🐱','🦀']] },
+  { text: 'ילד וילדה',       emojis: ['👦','👧'], distractors: [['👦','👶'], ['👧','👧'], ['👨','👧']] },
+  { text: 'אמא ותינוק',      emojis: ['👩','👶'], distractors: [['👨','👶'], ['👵','👶'], ['👩','👦']] },
+  { text: 'כדור ועיפרון',    emojis: ['⚽','✏️'], distractors: [['🎈','✏️'], ['⚽','📚'], ['🏀','✏️']] },
+  { text: 'פרה וסוס',        emojis: ['🐮','🐴'], distractors: [['🐮','🐑'], ['🐷','🐴'], ['🐮','🐮']] },
+  { text: 'מכונית ואוטובוס', emojis: ['🚗','🚌'], distractors: [['🚗','✈️'], ['🚕','🚌'], ['🚗','🚢']] },
+  { text: 'תפוח ובננה',      emojis: ['🍎','🍌'], distractors: [['🍊','🍌'], ['🍎','🍋'], ['🍇','🍌']] },
+
+  // ── Triples: short scenes ─────────────────────────────────────────
+  { text: 'ילד, ילדה ותינוק', emojis: ['👦','👧','👶'], distractors: [['👦','👦','👶'], ['👧','👧','👶'], ['👦','👧','👦']] },
+  { text: 'שמש, ירח וכוכב',  emojis: ['☀️','🌙','⭐'], distractors: [['☀️','☁️','⭐'], ['☀️','🌙','☁️'], ['🌧️','🌙','⭐']] },
+  { text: 'כלב, חתול וארנב', emojis: ['🐶','🐱','🐰'], distractors: [['🐶','🦊','🐰'], ['🐶','🐱','🐹'], ['🦁','🐱','🐰']] },
+  { text: 'אמא, אבא וילד',   emojis: ['👩','👨','👦'], distractors: [['👩','👨','👧'], ['👵','👨','👦'], ['👩','👴','👦']] },
+  { text: 'עץ, פרח וענן',    emojis: ['🌳','🌸','☁️'], distractors: [['🌵','🌸','☁️'], ['🌳','🌹','☁️'], ['🌳','🌸','🌙']] },
+  { text: 'לחם, ביצה וחלב',  emojis: ['🍞','🥚','🥛'], distractors: [['🍞','🥚','🧃'], ['🍞','🧀','🥛'], ['🥐','🥚','🥛']] },
+]
+
+// ── Generator ─────────────────────────────────────────────────────────
+export function generatePictureQuestion(usedIndices) {
+  const available = ITEMS.map((_, i) => i).filter(i => !usedIndices.has(i))
+  const idx     = available[Math.floor(Math.random() * available.length)]
+  const item    = ITEMS[idx]
+
+  // build 4 choices: correct + 3 distractors, shuffled
+  const answers = [
+    { emojis: item.emojis, correct: true },
+    ...item.distractors.map(e => ({ emojis: e, correct: false })),
+  ].sort(() => Math.random() - 0.5)
+
+  return { index: idx, text: item.text, correct: item.emojis, answers }
+}

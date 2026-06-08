@@ -13,6 +13,15 @@ const GAMES = [
     available: true,
   },
   {
+    id: 'reading',
+    icon: '🖼️',
+    name: 'קרא ובחר',
+    desc: 'מילה ← תמונה',
+    color1: '#F59E0B',
+    color2: '#B45309',
+    available: true,
+  },
+  {
     id: 'coming-heb1',
     icon: '🔒',
     name: 'בקרוב',

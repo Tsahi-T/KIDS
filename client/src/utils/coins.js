@@ -1,17 +1,26 @@
-const KEY = 'kids_coins'
+// Active key — set once at login; defaults to a guest key that gets wiped each session
+let _key = 'kids_coins_guest'
+
+/** Call once at login before any getCoins/addCoins usage. */
+export function initCoins(userId, initialValue) {
+  _key = userId ? `kids_coins_${userId}` : 'kids_coins_guest'
+  // For guests: always reset to 0 so leftover values never carry over
+  // For authenticated users: always trust the server value
+  localStorage.setItem(_key, String(Math.max(0, initialValue ?? 0)))
+}
 
 export function getCoins() {
-  return parseInt(localStorage.getItem(KEY) || '0', 10)
+  return parseInt(localStorage.getItem(_key) || '0', 10)
 }
 
 export function addCoins(amount) {
   const total = getCoins() + amount
-  localStorage.setItem(KEY, String(total))
+  localStorage.setItem(_key, String(total))
   return total
 }
 
 export function setCoins(val) {
-  localStorage.setItem(KEY, String(Math.max(0, val)))
+  localStorage.setItem(_key, String(Math.max(0, val)))
 }
 
 export function calcCoins(score, stars) {

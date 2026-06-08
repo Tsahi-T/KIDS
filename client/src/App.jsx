@@ -17,7 +17,7 @@ import FlagsGame        from './pages/FlagsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
 import Dashboard        from './pages/Dashboard.jsx'
 import Leaderboard      from './pages/Leaderboard.jsx'
-import { getCoins, setCoins } from './utils/coins.js'
+import { getCoins, setCoins, initCoins } from './utils/coins.js'
 
 // All playable games: { subject, subGame? }
 const ALL_GAMES = [
@@ -59,7 +59,9 @@ export default function App() {
   function handleStart(name, avatar, profile) {
     setPlayer({ name, avatar })
     setUserProfile(profile)
-    if (profile) setCoins(Math.max(getCoins(), profile.coins ?? 0))
+    // Guest   → always start at 0 (no persistence between sessions)
+    // Known user → server value is source of truth, never mix with localStorage
+    initCoins(profile?.userId ?? null, profile?.coins ?? 0)
     setScreen('map')
   }
 

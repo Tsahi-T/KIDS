@@ -42,18 +42,16 @@ const SUBJECTS = [
 ]
 
 export default function SubjectMap({ player, userProfile, onSelect, onRandom, onDashboard, onLeaderboard, onHome }) {
-  const [coins,    setCoins]    = useState(0)
-  const [rolling,  setRolling]  = useState(false)
+  const [coins,   setCoins]   = useState(0)
+  const [rolling, setRolling] = useState(false)
+
+  useEffect(() => { setCoins(getCoins()) }, [])
 
   function handleRandom() {
     if (rolling) return
     setRolling(true)
     setTimeout(() => { setRolling(false); onRandom() }, 700)
   }
-
-  useEffect(() => {
-    setCoins(getCoins())
-  }, [])
 
   return (
     <div className="map-screen">
@@ -74,43 +72,52 @@ export default function SubjectMap({ player, userProfile, onSelect, onRandom, on
         </div>
         {userProfile && (
           <div className="map-icon-btns">
-            <button className="map-icon-btn" onClick={onDashboard} title="הישגים">📊</button>
+            <button className="map-icon-btn" onClick={onDashboard}   title="הישגים">📊</button>
             <button className="map-icon-btn" onClick={onLeaderboard} title="שיאים">🏆</button>
           </div>
         )}
         <div className="map-title-text">בחר מקצוע</div>
       </div>
 
-      {/* subject cards */}
-      <div className="subjects-grid">
-        {SUBJECTS.map(s => (
-          <button
-            key={s.id}
-            className={`subject-card${s.available ? '' : ' locked'}`}
-            style={{ '--c1': s.color1, '--c2': s.color2 }}
-            onClick={() => s.available && onSelect(s.id)}
-            disabled={!s.available}
-          >
-            <div className="subject-glow" />
-            <div className="subject-icon">{s.icon}</div>
-            <div className="subject-name-col">
-              <div className="subject-name">{s.name}</div>
-              <div className="subject-desc">{s.desc}</div>
-            </div>
-            {!s.available && <div className="subject-lock">🔒</div>}
-          </button>
-        ))}
-      </div>
+      {/* scrollable content */}
+      <div className="map-scroll-body">
 
-      {/* random game button */}
-      <button
-        className={`random-game-btn${rolling ? ' rolling' : ''}`}
-        onClick={handleRandom}
-        disabled={rolling}
-      >
-        <span className="random-dice">{rolling ? '🎲' : '🎲'}</span>
-        <span className="random-label">הגרל משחק!</span>
-      </button>
+        {/* random game button — top of list */}
+        <button
+          className={`random-game-btn${rolling ? ' rolling' : ''}`}
+          onClick={handleRandom}
+          disabled={rolling}
+        >
+          <span className="random-crown">🏆</span>
+          <div className="random-text-col">
+            <span className="random-title">הגרל משחק!</span>
+            <span className="random-sub">קבל משחק מפתיע</span>
+          </div>
+          <span className={`random-dice${rolling ? ' spinning' : ''}`}>🎲</span>
+        </button>
+
+        {/* subject cards */}
+        <div className="subjects-grid">
+          {SUBJECTS.map(s => (
+            <button
+              key={s.id}
+              className={`subject-card${s.available ? '' : ' locked'}`}
+              style={{ '--c1': s.color1, '--c2': s.color2 }}
+              onClick={() => s.available && onSelect(s.id)}
+              disabled={!s.available}
+            >
+              <div className="subject-glow" />
+              <div className="subject-icon">{s.icon}</div>
+              <div className="subject-name-col">
+                <div className="subject-name">{s.name}</div>
+                <div className="subject-desc">{s.desc}</div>
+              </div>
+              {!s.available && <div className="subject-lock">🔒</div>}
+            </button>
+          ))}
+        </div>
+
+      </div>
 
       {/* decorative stars */}
       <div className="map-stars" aria-hidden="true">

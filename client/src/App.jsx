@@ -1,16 +1,17 @@
 import { useState, useRef } from 'react'
 import NameEntry        from './pages/NameEntry.jsx'
 import SubjectMap       from './pages/SubjectMap.jsx'
+import MathMap          from './pages/MathMap.jsx'
 import EnglishMap       from './pages/EnglishMap.jsx'
+import HebrewMap        from './pages/HebrewMap.jsx'
 import GeneralMap       from './pages/GeneralMap.jsx'
 import Game             from './pages/Game.jsx'
 import EnglishGame      from './pages/EnglishGame.jsx'
 import NumbersGame      from './pages/NumbersGame.jsx'
 import PrepositionsGame from './pages/PrepositionsGame.jsx'
-import ColorsGame      from './pages/ColorsGame.jsx'
-import HebrewMap       from './pages/HebrewMap.jsx'
-import FlashGame       from './pages/FlashGame.jsx'
-import ReadingGame     from './pages/ReadingGame.jsx'
+import ColorsGame       from './pages/ColorsGame.jsx'
+import FlashGame        from './pages/FlashGame.jsx'
+import ReadingGame      from './pages/ReadingGame.jsx'
 import MonthsGame       from './pages/MonthsGame.jsx'
 import FlagsGame        from './pages/FlagsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
@@ -20,15 +21,15 @@ import { getCoins, setCoins } from './utils/coins.js'
 
 // All playable games: { subject, subGame? }
 const ALL_GAMES = [
-  { subject: 'math'    },
-  { subject: 'english', subGame: 'vocab'        },
-  { subject: 'english', subGame: 'numbers'      },
-  { subject: 'english', subGame: 'prepositions' },
-  { subject: 'english', subGame: 'colors'       },
-  { subject: 'hebrew',  subGame: 'flash'        },
-  { subject: 'hebrew',  subGame: 'reading'      },
-  { subject: 'general', subGame: 'months'       },
-  { subject: 'general', subGame: 'flags'        },
+  { subject: 'math'                              },
+  { subject: 'english', subGame: 'vocab'         },
+  { subject: 'english', subGame: 'numbers'       },
+  { subject: 'english', subGame: 'prepositions'  },
+  { subject: 'english', subGame: 'colors'        },
+  { subject: 'hebrew',  subGame: 'flash'         },
+  { subject: 'hebrew',  subGame: 'reading'       },
+  { subject: 'general', subGame: 'months'        },
+  { subject: 'general', subGame: 'flags'         },
 ]
 
 const GAME_NAMES = {
@@ -58,49 +59,36 @@ export default function App() {
   function handleStart(name, avatar, profile) {
     setPlayer({ name, avatar })
     setUserProfile(profile)
-    // take max(localStorage, server) so partial-exit coins are never lost
     if (profile) setCoins(Math.max(getCoins(), profile.coins ?? 0))
     setScreen('map')
   }
 
-  function handleRandomGame() {
-    const pick = ALL_GAMES[Math.floor(Math.random() * ALL_GAMES.length)]
-    setSubject(pick.subject)
-    if (pick.subGame) {
-      gameIdRef.current      = pick.subGame
-      coinsBeforeRef.current = getCoins()
-      setSubGame(pick.subGame)
-      setGameName(GAME_NAMES[pick.subGame] ?? pick.subGame)
-    } else {
-      gameIdRef.current      = 'math'
-      coinsBeforeRef.current = getCoins()
-      setGameName(GAME_NAMES.math)
-    }
+  function launchGame(subj, sg) {
+    setSubject(subj)
+    const id = sg ?? 'math'
+    gameIdRef.current      = id
+    coinsBeforeRef.current = getCoins()
+    if (sg) setSubGame(sg)
+    setGameName(GAME_NAMES[id] ?? id)
     setShowExitConfirm(false)
     setScreen('game')
+  }
+
+  function handleRandomGame() {
+    const pick = ALL_GAMES[Math.floor(Math.random() * ALL_GAMES.length)]
+    launchGame(pick.subject, pick.subGame)
   }
 
   function handleSubjectSelect(subj) {
     setSubject(subj)
-    if (subj === 'english') setScreen('english-map')
+    if      (subj === 'english') setScreen('english-map')
     else if (subj === 'hebrew')  setScreen('hebrew-map')
     else if (subj === 'general') setScreen('general-map')
-    else {
-      gameIdRef.current      = 'math'
-      coinsBeforeRef.current = getCoins()
-      setGameName(GAME_NAMES.math)
-      setShowExitConfirm(false)
-      setScreen('game')
-    }
+    else                         setScreen('math-map')
   }
 
   function handleSubGameSelect(game) {
-    gameIdRef.current      = game
-    coinsBeforeRef.current = getCoins()
-    setSubGame(game)
-    setGameName(GAME_NAMES[game] ?? game)
-    setShowExitConfirm(false)
-    setScreen('game')
+    launchGame(subject, game)
   }
 
   async function handleGameOver(score, total, won) {
@@ -121,10 +109,10 @@ export default function App() {
   }
 
   function handleMap() {
-    if (subject === 'english') setScreen('english-map')
+    if      (subject === 'english') setScreen('english-map')
     else if (subject === 'hebrew')  setScreen('hebrew-map')
     else if (subject === 'general') setScreen('general-map')
-    else setScreen('map')
+    else                            setScreen('math-map')
   }
 
   function confirmExit() {
@@ -148,50 +136,27 @@ export default function App() {
         />
       )}
 
-      {screen === 'english-map' && (
-        <EnglishMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
-      )}
-      {screen === 'hebrew-map' && (
-        <HebrewMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
-      )}
-      {screen === 'general-map' && (
-        <GeneralMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
-      )}
+      {screen === 'math-map'    && <MathMap    player={player} onSelect={g => launchGame('math',    g)} onBack={() => setScreen('map')} />}
+      {screen === 'english-map' && <EnglishMap player={player} onSelect={g => launchGame('english', g)} onBack={() => setScreen('map')} />}
+      {screen === 'hebrew-map'  && <HebrewMap  player={player} onSelect={g => launchGame('hebrew',  g)} onBack={() => setScreen('map')} />}
+      {screen === 'general-map' && <GeneralMap player={player} onSelect={g => launchGame('general', g)} onBack={() => setScreen('map')} />}
 
-      {screen === 'game' && subject === 'math' && (
-        <Game key={`math-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'english' && subGame === 'vocab' && (
-        <EnglishGame key={`vocab-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'english' && subGame === 'numbers' && (
-        <NumbersGame key={`num-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'english' && subGame === 'prepositions' && (
-        <PrepositionsGame key={`prep-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'english' && subGame === 'colors' && (
-        <ColorsGame key={`colors-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'hebrew' && subGame === 'flash' && (
-        <FlashGame key={`flash-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'hebrew' && subGame === 'reading' && (
-        <ReadingGame key={`reading-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'general' && subGame === 'months' && (
-        <MonthsGame key={`months-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
-      {screen === 'game' && subject === 'general' && subGame === 'flags' && (
-        <FlagsGame key={`flags-${Date.now()}`} player={player} onGameOver={handleGameOver} />
-      )}
+      {screen === 'game' && subject === 'math'    && <Game             key={`math-${Date.now()}`}    player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'english' && subGame === 'vocab'        && <EnglishGame      key={`vocab-${Date.now()}`}   player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'english' && subGame === 'numbers'      && <NumbersGame      key={`num-${Date.now()}`}     player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'english' && subGame === 'prepositions' && <PrepositionsGame key={`prep-${Date.now()}`}    player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'english' && subGame === 'colors'       && <ColorsGame       key={`colors-${Date.now()}`}  player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'hebrew'  && subGame === 'flash'        && <FlashGame        key={`flash-${Date.now()}`}   player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'hebrew'  && subGame === 'reading'      && <ReadingGame      key={`reading-${Date.now()}`} player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'general' && subGame === 'months'       && <MonthsGame       key={`months-${Date.now()}`}  player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'general' && subGame === 'flags'        && <FlagsGame        key={`flags-${Date.now()}`}   player={player} onGameOver={handleGameOver} />}
 
-      {/* ── in-game exit button (fixed, always on top) ── */}
+      {/* in-game exit */}
       {screen === 'game' && (
         <button className="game-exit-btn" onClick={() => setShowExitConfirm(true)}>✕</button>
       )}
 
-      {/* ── exit confirmation modal ── */}
+      {/* exit confirmation modal */}
       {showExitConfirm && (
         <div className="exit-overlay" onClick={() => setShowExitConfirm(false)}>
           <div className="exit-card" onClick={e => e.stopPropagation()}>
@@ -222,20 +187,10 @@ export default function App() {
       )}
 
       {screen === 'dashboard' && (
-        <Dashboard
-          player={player}
-          userProfile={userProfile}
-          onBack={() => setScreen('map')}
-          onLeaderboard={() => setScreen('leaderboard')}
-        />
+        <Dashboard player={player} userProfile={userProfile} onBack={() => setScreen('map')} onLeaderboard={() => setScreen('leaderboard')} />
       )}
-
       {screen === 'leaderboard' && (
-        <Leaderboard
-          player={player}
-          userProfile={userProfile}
-          onBack={() => setScreen('map')}
-        />
+        <Leaderboard player={player} userProfile={userProfile} onBack={() => setScreen('map')} />
       )}
     </div>
   )

@@ -8,6 +8,8 @@ import EnglishGame      from './pages/EnglishGame.jsx'
 import NumbersGame      from './pages/NumbersGame.jsx'
 import PrepositionsGame from './pages/PrepositionsGame.jsx'
 import ColorsGame      from './pages/ColorsGame.jsx'
+import HebrewMap       from './pages/HebrewMap.jsx'
+import FlashGame       from './pages/FlashGame.jsx'
 import MonthsGame       from './pages/MonthsGame.jsx'
 import FlagsGame        from './pages/FlagsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
@@ -23,6 +25,7 @@ const GAME_NAMES = {
   months:       'חודשי השנה 📅',
   flags:        'דגלי מדינות 🌍',
   colors:       'צבעים 🎨',
+  flash:        'הבזק מילים ⚡',
 }
 
 export default function App() {
@@ -48,6 +51,7 @@ export default function App() {
   function handleSubjectSelect(subj) {
     setSubject(subj)
     if (subj === 'english') setScreen('english-map')
+    else if (subj === 'hebrew')  setScreen('hebrew-map')
     else if (subj === 'general') setScreen('general-map')
     else {
       gameIdRef.current      = 'math'
@@ -86,6 +90,7 @@ export default function App() {
 
   function handleMap() {
     if (subject === 'english') setScreen('english-map')
+    else if (subject === 'hebrew')  setScreen('hebrew-map')
     else if (subject === 'general') setScreen('general-map')
     else setScreen('map')
   }
@@ -113,6 +118,9 @@ export default function App() {
       {screen === 'english-map' && (
         <EnglishMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
       )}
+      {screen === 'hebrew-map' && (
+        <HebrewMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
+      )}
       {screen === 'general-map' && (
         <GeneralMap player={player} onSelect={handleSubGameSelect} onBack={() => setScreen('map')} />
       )}
@@ -131,6 +139,9 @@ export default function App() {
       )}
       {screen === 'game' && subject === 'english' && subGame === 'colors' && (
         <ColorsGame key={`colors-${Date.now()}`} player={player} onGameOver={handleGameOver} />
+      )}
+      {screen === 'game' && subject === 'hebrew' && subGame === 'flash' && (
+        <FlashGame key={`flash-${Date.now()}`} player={player} onGameOver={handleGameOver} />
       )}
       {screen === 'game' && subject === 'general' && subGame === 'months' && (
         <MonthsGame key={`months-${Date.now()}`} player={player} onGameOver={handleGameOver} />

@@ -16,10 +16,10 @@ const SUBJECTS = [
     id: 'hebrew',
     icon: '📖',
     name: 'עברית',
-    desc: 'בקרוב...',
+    desc: 'קריאה מהירה',
     color1: '#FF6B9D',
     color2: '#C9184A',
-    available: false,
+    available: true,
   },
   {
     id: 'english',

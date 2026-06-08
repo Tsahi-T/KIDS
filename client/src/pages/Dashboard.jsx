@@ -9,6 +9,7 @@ const GAME_LABELS = {
   months:       'חודשי השנה 📅',
   flags:        'דגלי מדינות 🌍',
   colors:       'צבעים 🎨',
+  flash:        'הבזק מילים ⚡',
 }
 
 const GAME_COLORS = {
@@ -19,6 +20,7 @@ const GAME_COLORS = {
   months:       '#F97316',
   flags:        '#3B82F6',
   colors:       '#A855F7',
+  flash:        '#FF6B9D',
 }
 
 const FAMILY_USERS = [

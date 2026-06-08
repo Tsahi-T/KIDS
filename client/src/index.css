@@ -1673,3 +1673,45 @@ html, body {
   color: #a78bfa;
   border: 1px solid rgba(167,139,250,0.3);
 }
+
+/* ── Colors Game ────────────────────────────────────── */
+.color-swatch-big {
+  width: 110px;
+  height: 110px;
+  border-radius: 1.2rem;
+  border: 3px solid rgba(255,255,255,0.25);
+  box-shadow: 0 0 24px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+
+.color-swatch-btn {
+  min-height: 100px;
+  border-radius: 1.2rem;
+  border: 3px solid rgba(255,255,255,0.15);
+  transition: transform 0.12s, border-color 0.2s;
+}
+.color-swatch-btn:hover:not(:disabled) {
+  transform: scale(1.06);
+  border-color: rgba(255,255,255,0.5);
+}
+.color-swatch-btn.ans-correct {
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px #4ade80;
+  animation: ansCorrectPop 0.3s ease;
+}
+.color-swatch-btn.ans-wrong {
+  border-color: #f87171;
+  box-shadow: 0 0 0 3px #f87171;
+}
+
+.color-word-btn {
+  min-height: 72px;
+  border-radius: 1.2rem;
+}
+.color-word-ans {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #f0f0ff;
+  pointer-events: none;
+}

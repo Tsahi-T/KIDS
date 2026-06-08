@@ -31,6 +31,15 @@ const GAMES = [
     available: true,
   },
   {
+    id: 'colors',
+    icon: '🎨',
+    name: 'צבעים',
+    desc: 'Colors',
+    color1: '#F97316',
+    color2: '#A855F7',
+    available: true,
+  },
+  {
     id: 'coming1',
     icon: '🔒',
     name: 'בקרוב',

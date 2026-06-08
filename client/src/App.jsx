@@ -7,6 +7,7 @@ import Game             from './pages/Game.jsx'
 import EnglishGame      from './pages/EnglishGame.jsx'
 import NumbersGame      from './pages/NumbersGame.jsx'
 import PrepositionsGame from './pages/PrepositionsGame.jsx'
+import ColorsGame      from './pages/ColorsGame.jsx'
 import MonthsGame       from './pages/MonthsGame.jsx'
 import FlagsGame        from './pages/FlagsGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
@@ -21,6 +22,7 @@ const GAME_NAMES = {
   prepositions: 'מיקום 📍',
   months:       'חודשי השנה 📅',
   flags:        'דגלי מדינות 🌍',
+  colors:       'צבעים 🎨',
 }
 
 export default function App() {
@@ -126,6 +128,9 @@ export default function App() {
       )}
       {screen === 'game' && subject === 'english' && subGame === 'prepositions' && (
         <PrepositionsGame key={`prep-${Date.now()}`} player={player} onGameOver={handleGameOver} />
+      )}
+      {screen === 'game' && subject === 'english' && subGame === 'colors' && (
+        <ColorsGame key={`colors-${Date.now()}`} player={player} onGameOver={handleGameOver} />
       )}
       {screen === 'game' && subject === 'general' && subGame === 'months' && (
         <MonthsGame key={`months-${Date.now()}`} player={player} onGameOver={handleGameOver} />

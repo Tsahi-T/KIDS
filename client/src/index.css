@@ -25,6 +25,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 /* ── Entry Screen ──────────────────────────────────── */
@@ -32,9 +33,22 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
+  padding: 0 1.5rem;
   max-width: 380px;
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* centers content when it fits; scrolls when it overflows */
+.entry-screen::before,
+.entry-screen::after {
+  content: '';
+  flex: 1;
+  min-height: 1rem;
+  max-height: 2.5rem;
 }
 
 .entry-logo {

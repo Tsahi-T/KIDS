@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const AVATARS  = { ofek: 'photo:OFEK', ori: 'photo:ORI', tsahy: 'photo:TSAHY' }
-const MEDALS   = ['🥇', '🥈', '🥉']
+const MEDALS = ['🥇', '🥈', '🥉']
 
 const GAME_LABELS = {
   math:         'כפל',

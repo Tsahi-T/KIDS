@@ -1,4 +1,5 @@
 import { list } from '@vercel/blob'
+import { loadRegistry, verifyPin } from './_registry.js'
 
 const TOKEN = process.env.BLOB_READ_WRITE_TOKEN
 
@@ -26,9 +27,12 @@ export default async function handler(req, res) {
   const { user, pin } = body ?? {}
   if (!user || !pin) return res.status(400).json({ ok: false })
 
-  const correctPin = process.env[`PIN_${String(user).toUpperCase()}`]
-  if (!correctPin) return res.status(400).json({ ok: false, error: 'unknown_user' })
-  if (correctPin !== String(pin)) return res.status(401).json({ ok: false, error: 'wrong_pin' })
+  const registry = await loadRegistry()
+  const userRecord = registry.users.find(u => u.userId === user)
+  if (!userRecord) return res.status(400).json({ ok: false, error: 'unknown_user' })
+
+  if (!verifyPin(pin, userRecord))
+    return res.status(401).json({ ok: false, error: 'wrong_pin' })
 
   const profile = await loadProfile(user)
   res.json({ ok: true, profile })

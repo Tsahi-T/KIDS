@@ -5,12 +5,9 @@ const TOKEN = process.env.BLOB_READ_WRITE_TOKEN
 
 async function loadProfile(userId) {
   try {
-    const { blobs } = await list({ prefix: `users/${userId}.json`, limit: 1 })
+    const { blobs } = await list({ prefix: `users/${userId}.json`, limit: 1, token: TOKEN })
     if (!blobs.length) return { userId, coins: 0, games: {} }
-    const r = await fetch(blobs[0].url, {
-      cache: 'no-store',
-      headers: { Authorization: `Bearer ${TOKEN}` },
-    })
+    const r = await fetch(blobs[0].url, { cache: 'no-store' })
     if (!r.ok) return { userId, coins: 0, games: {} }
     return await r.json()
   } catch {

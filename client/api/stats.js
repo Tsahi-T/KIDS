@@ -38,18 +38,21 @@ export default async function handler(req, res) {
     let body = req.body
     if (typeof body === 'string') { try { body = JSON.parse(body) } catch { body = {} } }
 
-    const { game, score, total, coinDelta } = body ?? {}
+    const { game, score, total, coinDelta, sessionSeconds } = body ?? {}
     const profile = await loadProfile(user)
 
     if (game) {
-      if (!profile.games[game]) profile.games[game] = { played: 0, bestScore: 0, history: [] }
+      if (!profile.games[game]) profile.games[game] = { played: 0, bestScore: 0, totalSeconds: 0, history: [] }
       const g = profile.games[game]
       g.played++
       g.bestScore = Math.max(g.bestScore, score ?? 0)
-      g.history.push({ date: new Date().toISOString(), score: score ?? 0, total: total ?? 25 })
+      if (!g.totalSeconds) g.totalSeconds = 0
+      if (sessionSeconds > 0) g.totalSeconds += sessionSeconds
+      g.history.push({ date: new Date().toISOString(), score: score ?? 0, total: total ?? 25, seconds: sessionSeconds ?? 0 })
       if (g.history.length > 100) g.history = g.history.slice(-100)
     }
 
+    if (sessionSeconds > 0) profile.totalSeconds = (profile.totalSeconds || 0) + sessionSeconds
     if (coinDelta > 0) profile.coins = (profile.coins || 0) + coinDelta
 
     await saveProfile(user, profile)

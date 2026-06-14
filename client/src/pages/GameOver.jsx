@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import AvatarDisplay, { isPhoto, photoName } from '../components/AvatarDisplay.jsx'
+import AvatarDisplay, { isPhoto, isUrl, photoName } from '../components/AvatarDisplay.jsx'
 import { getCoins, calcCoins } from '../utils/coins.js'
 
 export default function GameOver({ player, score, total, won, gameName, onRestart, onMap, onHome, onLeaderboard, isAuthenticated }) {
@@ -32,6 +32,8 @@ export default function GameOver({ player, score, total, won, gameName, onRestar
       <div className="gameover-avatar">
         {isPhoto(player.avatar)
           ? <img src={`/avatars/${photoName(player.avatar)}.png`} alt={player.name} className="gameover-photo" />
+          : isUrl(player.avatar)
+          ? <img src={player.avatar.slice(4)} alt={player.name} className="gameover-photo" />
           : player.avatar
         }
       </div>

@@ -27,11 +27,12 @@ export default async function handler(req, res) {
       .map(p => {
         const meta = registry.users.find(u => u.userId === p.userId) || {}
         return {
-          userId: p.userId,
-          name:   meta.name || p.userId,
-          avatar: meta.avatar || '👤',
-          coins:  p.coins || 0,
-          games:  p.games || {},
+          userId:       p.userId,
+          name:         meta.name || p.userId,
+          avatar:       meta.avatar || '👤',
+          coins:        p.coins || 0,
+          totalSeconds: p.totalSeconds || 0,
+          games:        p.games || {},
         }
       })
       .sort((a, b) => b.coins - a.coins)

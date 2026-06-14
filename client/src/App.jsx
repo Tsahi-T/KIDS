@@ -55,6 +55,7 @@ export default function App() {
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const coinsBeforeRef                        = useRef(0)
   const gameIdRef                             = useRef('math')
+  const gameStartRef                          = useRef(null)
 
   function handleStart(name, avatar, profile) {
     setPlayer({ name, avatar })
@@ -70,6 +71,7 @@ export default function App() {
     const id = sg ?? 'math'
     gameIdRef.current      = id
     coinsBeforeRef.current = getCoins()
+    gameStartRef.current   = Date.now()
     if (sg) setSubGame(sg)
     setGameName(GAME_NAMES[id] ?? id)
     setShowExitConfirm(false)
@@ -94,7 +96,10 @@ export default function App() {
   }
 
   async function handleGameOver(score, total, won) {
-    const coinDelta = Math.max(0, getCoins() - coinsBeforeRef.current)
+    const coinDelta      = Math.max(0, getCoins() - coinsBeforeRef.current)
+    const sessionSeconds = gameStartRef.current
+      ? Math.round((Date.now() - gameStartRef.current) / 1000)
+      : 0
     setShowExitConfirm(false)
     setResult({ score, total, won })
     setScreen('gameover')
@@ -104,7 +109,7 @@ export default function App() {
         await fetch(`/api/stats?user=${userProfile.userId}`, {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ game: gameIdRef.current, score, total, coinDelta }),
+          body:    JSON.stringify({ game: gameIdRef.current, score, total, coinDelta, sessionSeconds }),
         })
       } catch { /* non-critical */ }
     }

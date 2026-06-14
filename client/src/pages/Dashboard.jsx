@@ -26,6 +26,16 @@ const GAME_COLORS = {
 }
 
 
+function fmtTime(seconds) {
+  if (!seconds) return '—'
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = seconds % 60
+  if (h > 0) return `${h}ש ${m}ד`
+  if (m > 0) return `${m}ד ${s}ש`
+  return `${s}ש`
+}
+
 function fmt(isoDate) {
   const d = new Date(isoDate)
   return `${d.getDate()}/${d.getMonth() + 1} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
@@ -69,8 +79,23 @@ function AnalyticsPanel({ profile, userName }) {
   // per-game aggregate
   const gameIds = Object.keys(games)
 
+  const totalSecs = Object.values(games).reduce((s, g) => s + (g.totalSeconds || 0), 0)
+
   return (
     <div className="analytics-wrap">
+
+      {/* total play time banner */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '0.6rem',
+        background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)',
+        borderRadius: 12, padding: '0.6rem 1rem', marginBottom: '1rem',
+      }}>
+        <span style={{ fontSize: '1.5rem' }}>⏱️</span>
+        <div>
+          <div style={{ fontSize: '0.75rem', color: '#aaa' }}>סה״כ זמן משחק</div>
+          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#a78bfa' }}>{fmtTime(totalSecs)}</div>
+        </div>
+      </div>
 
       {/* summary cards per game */}
       <div className="analytics-section-title">📊 סיכום לפי משחק</div>
@@ -94,6 +119,10 @@ function AnalyticsPanel({ profile, userName }) {
               <div className="analytics-card-row">
                 <span className="analytics-stat-label">משחקים</span>
                 <span className="analytics-stat-val">{g.played}</span>
+              </div>
+              <div className="analytics-card-row">
+                <span className="analytics-stat-label">זמן</span>
+                <span className="analytics-stat-val">{fmtTime(g.totalSeconds)}</span>
               </div>
               <div className="analytics-card-row">
                 <span className="analytics-stat-label">ממוצע</span>
@@ -357,23 +386,23 @@ export default function Dashboard({ player, userProfile, onBack, onLeaderboard }
         </div>
       )}
 
-      {/* admin mode toggle */}
-      {isAdmin && (
-        <div className="dash-mode-toggle">
-          <button
-            className={`dmt-btn${mode === 'stats' ? ' dmt-active' : ''}`}
-            onClick={() => setMode('stats')}
-          >📋 הישגים</button>
-          <button
-            className={`dmt-btn${mode === 'analytics' ? ' dmt-active' : ''}`}
-            onClick={() => setMode('analytics')}
-          >📊 ניתוח</button>
+      {/* mode toggle — all users get stats + analytics; admin also gets manage */}
+      <div className="dash-mode-toggle">
+        <button
+          className={`dmt-btn${mode === 'stats' ? ' dmt-active' : ''}`}
+          onClick={() => setMode('stats')}
+        >📋 הישגים</button>
+        <button
+          className={`dmt-btn${mode === 'analytics' ? ' dmt-active' : ''}`}
+          onClick={() => setMode('analytics')}
+        >📊 ניתוח</button>
+        {isAdmin && (
           <button
             className={`dmt-btn${mode === 'manage' ? ' dmt-active' : ''}`}
             onClick={() => setMode('manage')}
           >👥 ניהול</button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── MANAGE MODE (admin only) ── */}
       {isAdmin && mode === 'manage' && (
@@ -394,8 +423,8 @@ export default function Dashboard({ player, userProfile, onBack, onLeaderboard }
 
           {loading && <div className="dash-loading">טוען...</div>}
 
-          {/* ── ANALYTICS MODE (admin only) ── */}
-          {!loading && isAdmin && mode === 'analytics' && (
+          {/* ── ANALYTICS MODE ── */}
+          {!loading && mode === 'analytics' && (
             <AnalyticsPanel profile={profile} userName={displayName} />
           )}
 

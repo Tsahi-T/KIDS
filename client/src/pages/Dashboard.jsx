@@ -11,6 +11,7 @@ const GAME_LABELS = {
   colors:       'צבעים 🎨',
   flash:        'הבזק מילים ⚡',
   reading:      'קרא ובחר 🖼️',
+  trivia:       'ידע מגניב 🧠',
 }
 
 const GAME_COLORS = {

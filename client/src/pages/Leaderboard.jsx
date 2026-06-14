@@ -13,6 +13,7 @@ const GAME_LABELS = {
   colors:       'צבעים',
   flash:        'הבזק',
   reading:      'קריאה',
+  trivia:       'ידע מגניב',
 }
 
 function fmtTime(seconds) {

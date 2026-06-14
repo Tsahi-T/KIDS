@@ -22,13 +22,13 @@ const GAMES = [
     available: true,
   },
   {
-    id: 'coming-heb1',
-    icon: '🔒',
-    name: 'בקרוב',
-    desc: 'עוד משחקים בדרך!',
-    color1: '#2a2a3e',
-    color2: '#1a1a2e',
-    available: false,
+    id: 'trivia',
+    icon: '🧠',
+    name: 'ידע מגניב',
+    desc: 'קרא, זכור, ענה!',
+    color1: '#06b6d4',
+    color2: '#0284c7',
+    available: true,
   },
 ]
 

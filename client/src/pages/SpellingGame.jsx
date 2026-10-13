@@ -141,15 +141,17 @@ function buildQuestions() {
 }
 
 export default function SpellingGame({ player, onGameOver }) {
-  const questionsRef             = useRef(buildQuestions())
-  const scoreRef                 = useRef(0)
-  const timerRef                 = useRef(null)
-  const [qIdx,      setQIdx]     = useState(0)
-  const [selected,  setSelected] = useState(null)
+  const questionsRef              = useRef(buildQuestions())
+  const scoreRef                  = useRef(0)
+  const lockedRef                 = useRef(false)
+  const timerRef                  = useRef(null)
+  const [qIdx,      setQIdx]      = useState(0)
+  const [selected,  setSelected]  = useState(null)
   const [coins,     setCoinsDisp] = useState(getCoins())
-  const [score,     setScore]    = useState(0)
-  const [remaining, setRemain]   = useState(Q_TIME)
-  const [speaking,  setSpeaking] = useState(false)
+  const [score,     setScore]     = useState(0)
+  const [remaining, setRemain]    = useState(Q_TIME)
+  const [speaking,  setSpeaking]  = useState(false)
+  const [coinPop,   setCoinPop]   = useState(null)
 
   const q = questionsRef.current[qIdx]
 
@@ -169,8 +171,8 @@ export default function SpellingGame({ player, onGameOver }) {
   }
 
   useEffect(() => {
+    lockedRef.current = false
     startTimer()
-    // auto-play English word
     const delay = setTimeout(() => speakCurrent(), 400)
     return () => {
       clearInterval(timerRef.current)
@@ -185,8 +187,23 @@ export default function SpellingGame({ player, onGameOver }) {
     setTimeout(() => setSpeaking(false), 1800)
   }
 
+  function advance(nextIdx) {
+    if (nextIdx >= TOTAL_Q) {
+      setTimeout(() => {
+        const s = scoreRef.current
+        onGameOver(s, TOTAL_Q, s >= TOTAL_Q / 2)
+      }, 1100)
+    } else {
+      setTimeout(() => {
+        setSelected(null)
+        setQIdx(nextIdx)
+      }, 1100)
+    }
+  }
+
   function handleAnswer(choice) {
-    if (selected !== null) return
+    if (lockedRef.current) return
+    lockedRef.current = true
     clearInterval(timerRef.current)
     setSelected(choice)
 
@@ -195,24 +212,16 @@ export default function SpellingGame({ player, onGameOver }) {
       setCoinsDisp(getCoins())
       scoreRef.current += 1
       setScore(scoreRef.current)
+      setCoinPop(Date.now())
+      setTimeout(() => setCoinPop(null), 1100)
     }
-  }
 
-  function next() {
-    window.speechSynthesis?.cancel()
-    if (qIdx + 1 >= TOTAL_Q) {
-      const s = scoreRef.current
-      onGameOver(s, TOTAL_Q, s >= TOTAL_Q / 2)
-    } else {
-      setSelected(null)
-      setQIdx(i => i + 1)
-    }
+    advance(qIdx + 1)
   }
 
   const isTimeout = selected === '__timeout__'
   const isCorrect = selected !== null && !isTimeout && selected === q.correct
-
-  const timerPct = remaining / Q_TIME
+  const timerPct  = remaining / Q_TIME
   const timerColor = remaining > 12 ? '#4ade80' : remaining > 6 ? '#fbbf24' : '#f87171'
 
   return (
@@ -290,26 +299,16 @@ export default function SpellingGame({ player, onGameOver }) {
         })}
       </div>
 
-      {/* feedback */}
-      {selected !== null && (
-        <div className={`spell-feedback${isCorrect ? ' spell-fb-correct' : ' spell-fb-wrong'}`}>
-          <span className="spell-fb-emoji">
-            {isCorrect ? '🎉' : isTimeout ? '⏰' : '❌'}
-          </span>
-          <div className="spell-fb-text">
-            {isCorrect
-              ? 'כל הכבוד!'
-              : isTimeout
-                ? `הזמן נגמר — התשובה: ${q.correct}`
-                : `התשובה הנכונה: ${q.correct}`
-            }
-          </div>
-          {isCorrect && <div className="spell-fb-coins">+{COIN_VAL} 🪙</div>}
-          <button className="spell-next-btn" onClick={next}>
-            {qIdx + 1 >= TOTAL_Q ? '🏁 סיום' : 'הבא →'}
-          </button>
+      {/* wrong answer — show correct */}
+      {selected !== null && !isCorrect && (
+        <div className="spell-correct-hint">
+          <span>{isTimeout ? '⏰' : '❌'}</span>
+          <span>{q.correct}</span>
         </div>
       )}
+
+      {/* coin pop */}
+      {coinPop && <div key={coinPop} className="coin-float spell-coin-float">🪙 +{COIN_VAL}</div>}
 
       {/* score dots */}
       <div className="spell-dots">

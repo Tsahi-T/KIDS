@@ -40,13 +40,13 @@ const GAMES = [
     available: true,
   },
   {
-    id: 'coming1',
-    icon: '🔒',
-    name: 'בקרוב',
-    desc: 'עוד משחקים בדרך!',
-    color1: '#2a2a3e',
-    color2: '#1a1a2e',
-    available: false,
+    id: 'spelling',
+    icon: '🇺🇸',
+    name: 'מילים להכתבה',
+    desc: 'Hear it · Choose it',
+    color1: '#3B82F6',
+    color2: '#1D4ED8',
+    available: true,
   },
 ]
 

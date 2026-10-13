@@ -14,6 +14,7 @@ const GAME_LABELS = {
   flash:        'הבזק',
   reading:      'קריאה',
   trivia:       'ידע מגניב',
+  spelling:     'מילים להכתבה',
 }
 
 function fmtTime(seconds) {

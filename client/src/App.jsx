@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import NameEntry        from './pages/NameEntry.jsx'
 import SubjectMap       from './pages/SubjectMap.jsx'
 import MathMap          from './pages/MathMap.jsx'
@@ -50,6 +50,12 @@ const GAME_NAMES = {
   trivia:       'ידע מגניב 🧠',
 }
 
+const GAME_SUBJECT = {
+  math: 'math', vocab: 'english', numbers: 'english', prepositions: 'english',
+  colors: 'english', spelling: 'english', flash: 'hebrew', reading: 'hebrew',
+  trivia: 'hebrew', months: 'general', flags: 'general',
+}
+
 export default function App() {
   const [screen,          setScreen]          = useState('entry')
   const [player,          setPlayer]          = useState({ name: '', avatar: 'photo:OFEK' })
@@ -62,6 +68,15 @@ export default function App() {
   const coinsBeforeRef                        = useRef(0)
   const gameIdRef                             = useRef('math')
   const gameStartRef                          = useRef(null)
+
+  useEffect(() => {
+    const gameId = new URLSearchParams(window.location.search).get('game')
+    if (gameId && GAME_SUBJECT[gameId]) {
+      initCoins(null, 0)
+      setPlayer({ name: 'אורח', avatar: '👤' })
+      launchGame(GAME_SUBJECT[gameId], gameId === 'math' ? undefined : gameId)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleStart(name, avatar, profile) {
     setPlayer({ name, avatar })

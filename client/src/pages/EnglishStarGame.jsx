@@ -27,10 +27,28 @@ const FILL_QUESTIONS = [
 ]
 const FILL_BANK = ['tired', 'kind', 'famous', 'beautiful', 'special', 'important', 'strong', 'young']
 
-const REF_WORDS = [
-  'doctor', 'nurse', 'king', 'prince', 'princess', 'policeman', 'waiter', 'guard', 'driver',
-  'kind', 'brave', 'strong', 'special', 'famous', 'tired', 'beautiful',
-  'young', 'old', 'rich', 'poor', 'funny', 'clean', 'fast', 'warm', 'sweet', 'ugly',
+const SUBJECTS = [
+  { label: 'I',             verb: 'am'  },
+  { label: 'You',           verb: 'are' },
+  { label: 'We',            verb: 'are' },
+  { label: 'They',          verb: 'are' },
+  { label: 'He',            verb: 'is'  },
+  { label: 'She',           verb: 'is'  },
+  { label: 'The doctor',    verb: 'is'  },
+  { label: 'The nurse',     verb: 'is'  },
+  { label: 'The king',      verb: 'is'  },
+  { label: 'The prince',    verb: 'is'  },
+  { label: 'The princess',  verb: 'is'  },
+  { label: 'The policeman', verb: 'is'  },
+  { label: 'The waiter',    verb: 'is'  },
+  { label: 'The guard',     verb: 'is'  },
+  { label: 'The baby',      verb: 'is'  },
+]
+
+const ADJECTIVES = [
+  'kind', 'brave', 'famous', 'important', 'special', 'strong',
+  'tired', 'beautiful', 'young', 'old', 'rich', 'poor', 'funny',
+  'clean', 'dirty', 'fast', 'warm', 'sweet', 'ugly',
 ]
 
 const COINS_OPP  = 5
@@ -49,14 +67,6 @@ function shuffle(arr) {
   return a
 }
 
-function validateSentence(raw) {
-  const t = raw.trim()
-  if (!t)                                                   return { ok: false, hint: 'המשפט ריק' }
-  if (!/^[A-Z]/.test(t))                                   return { ok: false, hint: 'התחל באות גדולה!' }
-  if (!t.endsWith('.'))                                     return { ok: false, hint: 'שים נקודה בסוף.' }
-  if (!/\b(am|is|are)\b/i.test(t))                         return { ok: false, hint: 'חסר am / is / are' }
-  return { ok: true, hint: '✓ מעולה!' }
-}
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -86,9 +96,11 @@ export default function EnglishStarGame({ player, onGameOver }) {
   const [fillScore,    setFillScore]    = useState(0)
   const [fillCoinPop,  setFillCoinPop]  = useState(null)
 
-  // ── Part 3: sentences
-  const [sentences, setSentences] = useState(['', '', '', ''])
-  const [sentResults, setSentResults] = useState(null)
+  // ── Part 3: sentence builder
+  const [builtSents,  setBuiltSents]  = useState([])    // built sentence strings
+  const [pickedSubj,  setPickedSubj]  = useState(null)  // SUBJECTS entry
+  const [pickedAdj,   setPickedAdj]   = useState(null)  // adjective string
+  const [sentCoinPop, setSentCoinPop] = useState(null)
 
   // ── Part 1 handlers ──────────────────────────────────────────────────────
   function isLeftMatched(word)  { return matchedLeft.has(word) }
@@ -161,16 +173,20 @@ export default function EnglishStarGame({ player, onGameOver }) {
   }
 
   // ── Part 3 handlers ──────────────────────────────────────────────────────
-  function checkSentences() {
-    const res = sentences.map(s => validateSentence(s))
-    setSentResults(res)
-    res.forEach(r => {
-      if (r.ok) {
-        addCoins(COINS_SENT)
-        scoreRef.current++
-      }
-    })
+  const sentPreview = pickedSubj && pickedAdj
+    ? `${pickedSubj.label} ${pickedSubj.verb} ${pickedAdj}.`
+    : null
+
+  function addSentence() {
+    if (!sentPreview || builtSents.length >= 4) return
+    setBuiltSents(prev => [...prev, sentPreview])
+    addCoins(COINS_SENT)
     setCoinsDisp(getCoins())
+    scoreRef.current++
+    setSentCoinPop(Date.now())
+    setTimeout(() => setSentCoinPop(null), 1100)
+    setPickedSubj(null)
+    setPickedAdj(null)
   }
 
   function finish() {
@@ -331,78 +347,83 @@ export default function EnglishStarGame({ player, onGameOver }) {
         </div>
       )}
 
-      {/* ═══════════════ PART 3: SENTENCES ═══════════════ */}
+      {/* ═══════════════ PART 3: SENTENCE BUILDER ═══════════════ */}
       {phase === 'sentences' && (
         <div className="estar-section estar-sent-section">
           <div className="estar-instruction">
-            <span>📝</span> כתוב 4 משפטים עם am / is / are
+            <span>📝</span> בנה 4 משפטים — בחר נושא ושם תואר
           </div>
 
-          <div className="estar-example-row">
-            <span className="estar-example-label">לדוגמה:</span>
-            <span className="estar-example-text" dir="ltr">The doctor is kind.</span>
-          </div>
-
-          <div className="estar-rules-row">
-            <span className="estar-rule">🔠 אות גדולה</span>
-            <span className="estar-rule">am / is / are</span>
-            <span className="estar-rule">. נקודה בסוף</span>
-          </div>
-
-          <div className="estar-inputs">
-            {sentences.map((s, i) => (
-              <div key={i} className="estar-input-row">
-                <span className="estar-input-num">{i + 1}.</span>
-                <div className="estar-input-wrap">
-                  <input
-                    className={`estar-input
-                      ${sentResults ? (sentResults[i].ok ? ' estar-input-ok' : ' estar-input-bad') : ''}
-                    `}
-                    type="text"
-                    value={s}
-                    onChange={e => setSentences(prev => {
-                      const a = [...prev]; a[i] = e.target.value; return a
-                    })}
-                    placeholder="Write a sentence here..."
-                    dir="ltr"
-                    disabled={!!sentResults}
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck="false"
-                  />
-                  {sentResults && (
-                    <span className="estar-input-badge">
-                      {sentResults[i].ok ? '✅' : '❌'}
-                    </span>
-                  )}
-                </div>
-                {sentResults && !sentResults[i].ok && (
-                  <div className="estar-input-hint">{sentResults[i].hint}</div>
-                )}
+          {/* built sentences list */}
+          <div className="estar-built-list">
+            {[0,1,2,3].map(i => (
+              <div key={i} className={`estar-built-slot${i < builtSents.length ? ' estar-built-done' : ''}`}>
+                <span className="estar-built-num">{i + 1}.</span>
+                {i < builtSents.length
+                  ? <span className="estar-built-text" dir="ltr">{builtSents[i]}</span>
+                  : <span className="estar-built-empty">___</span>
+                }
+                {i < builtSents.length && <span>✅</span>}
               </div>
             ))}
           </div>
 
-          {/* word reference bank */}
-          <div className="estar-ref-label">מילים לעזרה:</div>
-          <div className="estar-ref-bank">
-            {REF_WORDS.map(w => (
-              <span key={w} className="estar-ref-word" dir="ltr">{w}</span>
-            ))}
-          </div>
+          {builtSents.length < 4 && (
+            <>
+              {/* subject picker */}
+              <div className="estar-picker-label">בחר נושא:</div>
+              <div className="estar-subj-grid">
+                {SUBJECTS.map(s => (
+                  <button
+                    key={s.label}
+                    className={`estar-subj-btn${pickedSubj?.label === s.label ? ' estar-subj-sel' : ''}`}
+                    onClick={() => setPickedSubj(prev => prev?.label === s.label ? null : s)}
+                    dir="ltr"
+                  >{s.label}</button>
+                ))}
+              </div>
 
-          {!sentResults ? (
-            <button
-              className="estar-check-btn"
-              onClick={checkSentences}
-              disabled={sentences.every(s => !s.trim())}
-            >
-              בדוק ✓
-            </button>
-          ) : (
-            <button className="estar-advance-btn" onClick={finish}>
-              🏁 סיום
-            </button>
+              {/* verb display */}
+              {pickedSubj && (
+                <div className="estar-verb-display" dir="ltr">
+                  <span className="estar-verb-subj">{pickedSubj.label}</span>
+                  <span className="estar-verb-arrow">→</span>
+                  <span className="estar-verb-word">{pickedSubj.verb}</span>
+                </div>
+              )}
+
+              {/* adjective picker */}
+              <div className="estar-picker-label">בחר שם תואר:</div>
+              <div className="estar-adj-grid">
+                {ADJECTIVES.map(adj => (
+                  <button
+                    key={adj}
+                    className={`estar-adj-btn${pickedAdj === adj ? ' estar-adj-sel' : ''}`}
+                    onClick={() => setPickedAdj(prev => prev === adj ? null : adj)}
+                    dir="ltr"
+                  >{adj}</button>
+                ))}
+              </div>
+
+              {/* preview */}
+              <div className={`estar-preview${sentPreview ? ' estar-preview-ready' : ''}`} dir="ltr">
+                {sentPreview || <span className="estar-preview-hint">בחר נושא ושם תואר...</span>}
+              </div>
+
+              <button
+                className="estar-add-btn"
+                onClick={addSentence}
+                disabled={!sentPreview}
+              >הוסף משפט +</button>
+            </>
+          )}
+
+          {builtSents.length === 4 && (
+            <button className="estar-advance-btn" onClick={finish}>🏁 סיום</button>
+          )}
+
+          {sentCoinPop && (
+            <div key={sentCoinPop} className="coin-float estar-coin-float">🪙 +{COINS_SENT}</div>
           )}
         </div>
       )}

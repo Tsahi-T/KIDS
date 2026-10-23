@@ -2973,6 +2973,169 @@ html, body {
   border: 1px solid rgba(255,255,255,0.08);
 }
 
+/* ── Sentence builder (Part 3) ── */
+.estar-built-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.estar-built-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  min-height: 2.4rem;
+}
+
+.estar-built-done {
+  border-color: rgba(74,222,128,0.35);
+  background: rgba(74,222,128,0.07);
+}
+
+.estar-built-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  width: 1rem;
+}
+
+.estar-built-text {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4ade80;
+  text-align: left;
+}
+
+.estar-built-empty {
+  flex: 1;
+  color: rgba(255,255,255,0.2);
+  font-size: 0.85rem;
+}
+
+.estar-picker-label {
+  font-size: 0.73rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.4);
+  margin-top: 0.25rem;
+}
+
+.estar-subj-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.estar-subj-btn {
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.07);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Heebo', sans-serif;
+}
+
+.estar-subj-btn:hover { background: rgba(255,255,255,0.14); }
+
+.estar-subj-sel {
+  background: rgba(245,158,11,0.2) !important;
+  border-color: #F59E0B !important;
+  color: #fbbf24 !important;
+}
+
+.estar-verb-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 10px;
+  padding: 0.4rem 0.8rem;
+}
+
+.estar-verb-subj  { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.6); }
+.estar-verb-arrow { color: rgba(255,255,255,0.25); font-size: 0.75rem; }
+.estar-verb-word  { font-size: 1rem; font-weight: 900; color: #a78bfa; letter-spacing: 0.03em; }
+
+.estar-adj-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.estar-adj-btn {
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.07);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Heebo', sans-serif;
+}
+
+.estar-adj-btn:hover { background: rgba(255,255,255,0.14); }
+
+.estar-adj-sel {
+  background: rgba(96,165,250,0.2) !important;
+  border-color: #60a5fa !important;
+  color: #93c5fd !important;
+}
+
+.estar-preview {
+  background: rgba(255,255,255,0.05);
+  border: 2px dashed rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  text-align: left;
+  min-height: 2.8rem;
+  transition: all 0.25s;
+}
+
+.estar-preview-ready {
+  border-style: solid;
+  border-color: rgba(245,158,11,0.5);
+  color: #fbbf24;
+  background: rgba(245,158,11,0.08);
+}
+
+.estar-preview-hint {
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+.estar-add-btn {
+  padding: 0.65rem 1rem;
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: 'Heebo', sans-serif;
+  box-shadow: 0 3px 12px rgba(245,158,11,0.3);
+}
+
+.estar-add-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(245,158,11,0.4); }
+.estar-add-btn:active:not(:disabled) { transform: scale(0.97); }
+.estar-add-btn:disabled { opacity: 0.35; cursor: default; }
+
 /* shared action buttons */
 .estar-advance-btn {
   padding: 0.7rem 1rem;

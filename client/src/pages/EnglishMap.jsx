@@ -48,6 +48,15 @@ const GAMES = [
     color2: '#1D4ED8',
     available: true,
   },
+  {
+    id: 'englishstar',
+    icon: '⭐',
+    name: 'English Star',
+    desc: 'הפכים · השלמה · משפטים',
+    color1: '#F59E0B',
+    color2: '#B45309',
+    available: true,
+  },
 ]
 
 export default function EnglishMap({ player, onSelect, onBack }) {

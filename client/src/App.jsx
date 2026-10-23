@@ -16,6 +16,7 @@ import ReadingGame      from './pages/ReadingGame.jsx'
 import MonthsGame       from './pages/MonthsGame.jsx'
 import FlagsGame        from './pages/FlagsGame.jsx'
 import SpellingGame     from './pages/SpellingGame.jsx'
+import EnglishStarGame  from './pages/EnglishStarGame.jsx'
 import GameOver         from './pages/GameOver.jsx'
 import Dashboard        from './pages/Dashboard.jsx'
 import Leaderboard      from './pages/Leaderboard.jsx'
@@ -29,6 +30,7 @@ const ALL_GAMES = [
   { subject: 'english', subGame: 'prepositions'  },
   { subject: 'english', subGame: 'colors'        },
   { subject: 'english', subGame: 'spelling'      },
+  { subject: 'english', subGame: 'englishstar'   },
   { subject: 'hebrew',  subGame: 'flash'         },
   { subject: 'hebrew',  subGame: 'reading'       },
   { subject: 'hebrew',  subGame: 'trivia'        },
@@ -45,6 +47,7 @@ const GAME_NAMES = {
   flags:        'דגלי מדינות 🌍',
   colors:       'צבעים 🎨',
   spelling:     'מילים להכתבה 🇺🇸',
+  englishstar:  'English Star ⭐',
   flash:        'הבזק מילים ⚡',
   reading:      'קרא ובחר 🖼️',
   trivia:       'ידע מגניב 🧠',
@@ -52,7 +55,7 @@ const GAME_NAMES = {
 
 const GAME_SUBJECT = {
   math: 'math', vocab: 'english', numbers: 'english', prepositions: 'english',
-  colors: 'english', spelling: 'english', flash: 'hebrew', reading: 'hebrew',
+  colors: 'english', spelling: 'english', englishstar: 'english', flash: 'hebrew', reading: 'hebrew',
   trivia: 'hebrew', months: 'general', flags: 'general',
 }
 
@@ -174,7 +177,8 @@ export default function App() {
       {screen === 'game' && subject === 'english' && subGame === 'numbers'      && <NumbersGame      key={`num-${Date.now()}`}     player={player} onGameOver={handleGameOver} />}
       {screen === 'game' && subject === 'english' && subGame === 'prepositions' && <PrepositionsGame key={`prep-${Date.now()}`}    player={player} onGameOver={handleGameOver} />}
       {screen === 'game' && subject === 'english' && subGame === 'colors'       && <ColorsGame       key={`colors-${Date.now()}`}    player={player} onGameOver={handleGameOver} />}
-      {screen === 'game' && subject === 'english' && subGame === 'spelling'     && <SpellingGame     key={`spelling-${Date.now()}`}  player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'english' && subGame === 'spelling'     && <SpellingGame     key={`spelling-${Date.now()}`}     player={player} onGameOver={handleGameOver} />}
+      {screen === 'game' && subject === 'english' && subGame === 'englishstar'  && <EnglishStarGame  key={`englishstar-${Date.now()}`}  player={player} onGameOver={handleGameOver} />}
       {screen === 'game' && subject === 'hebrew'  && subGame === 'flash'        && <FlashGame        key={`flash-${Date.now()}`}   player={player} onGameOver={handleGameOver} />}
       {screen === 'game' && subject === 'hebrew'  && subGame === 'trivia'       && <TriviaGame       key={`trivia-${Date.now()}`}  player={player} onGameOver={handleGameOver} />}
       {screen === 'game' && subject === 'hebrew'  && subGame === 'reading'      && <ReadingGame      key={`reading-${Date.now()}`} player={player} onGameOver={handleGameOver} />}

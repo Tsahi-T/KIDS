@@ -15,6 +15,7 @@ const GAME_LABELS = {
   reading:      'קריאה',
   trivia:       'ידע מגניב',
   spelling:     'מילים להכתבה',
+  englishstar:  'English Star',
 }
 
 function fmtTime(seconds) {

@@ -70,7 +70,7 @@ export default function EnglishStarGame({ player, onGameOver }) {
   const leftCol  = useRef(shuffle(OPPOSITES.map(p => p[0])))
   const rightCol = useRef(shuffle(OPPOSITES.map(p => p[1])))
   const [matchedLeft,  setMatchedLeft]  = useState(new Set())
-  const [selLeft,      setSelLeft]      = useState(null)
+  const [sel,          setSel]          = useState(null)  // {word, side:'left'|'right'}
   const [shakeLeft,    setShakeLeft]    = useState(null)
   const [shakeRight,   setShakeRight]   = useState(null)
   const [oppScore,     setOppScore]     = useState(0)
@@ -91,35 +91,43 @@ export default function EnglishStarGame({ player, onGameOver }) {
   const [sentResults, setSentResults] = useState(null)
 
   // ── Part 1 handlers ──────────────────────────────────────────────────────
-  function clickLeft(word) {
-    if (matchedLeft.has(word)) return
-    setSelLeft(prev => prev === word ? null : word)
-  }
+  function isLeftMatched(word)  { return matchedLeft.has(word) }
+  function isRightMatched(word) { return OPPOSITES.some(p => p[1] === word && matchedLeft.has(p[0])) }
 
-  function clickRight(word) {
-    if (!selLeft) return
-    const isRightMatched = OPPOSITES.some(p => p[1] === word && matchedLeft.has(p[0]))
-    if (isRightMatched) return
+  function clickWord(word, side) {
+    const matched = side === 'left' ? isLeftMatched(word) : isRightMatched(word)
+    if (matched) return
 
-    const valid = OPPOSITES.find(p => p[0] === selLeft && p[1] === word)
+    if (!sel) {
+      setSel({ word, side })
+      return
+    }
+
+    if (sel.side === side) {
+      // same column — switch or deselect
+      setSel(sel.word === word ? null : { word, side })
+      return
+    }
+
+    // opposite columns — try to match
+    const leftWord  = side === 'left'  ? word : sel.word
+    const rightWord = side === 'right' ? word : sel.word
+
+    const valid = OPPOSITES.find(p => p[0] === leftWord && p[1] === rightWord)
     if (valid) {
       addCoins(COINS_OPP)
       setCoinsDisp(getCoins())
       scoreRef.current++
       setOppScore(s => s + 1)
-      setMatchedLeft(prev => new Set([...prev, selLeft]))
-      setSelLeft(null)
+      setMatchedLeft(prev => new Set([...prev, leftWord]))
+      setSel(null)
       setOppCoinPop(Date.now())
       setTimeout(() => setOppCoinPop(null), 1100)
     } else {
-      setShakeLeft(selLeft)
-      setShakeRight(word)
-      setTimeout(() => { setShakeLeft(null); setShakeRight(null); setSelLeft(null) }, 550)
+      setShakeLeft(leftWord)
+      setShakeRight(rightWord)
+      setTimeout(() => { setShakeLeft(null); setShakeRight(null); setSel(null) }, 550)
     }
-  }
-
-  function isRightWordMatched(word) {
-    return OPPOSITES.some(p => p[1] === word && matchedLeft.has(p[0]))
   }
 
   // ── Part 2 handlers ──────────────────────────────────────────────────────
@@ -213,18 +221,18 @@ export default function EnglishStarGame({ player, onGameOver }) {
             {/* left column */}
             <div className="estar-match-col">
               {leftCol.current.map(word => {
-                const isMatched = matchedLeft.has(word)
-                const isSel     = selLeft === word
+                const isMatched = isLeftMatched(word)
+                const isSel     = sel?.word === word && sel?.side === 'left'
                 const isShaking = shakeLeft === word
                 return (
                   <button
                     key={word}
                     className={`estar-mword estar-mword-left
-                      ${isMatched  ? ' estar-mword-matched' : ''}
-                      ${isSel      ? ' estar-mword-sel' : ''}
-                      ${isShaking  ? ' estar-mword-shake' : ''}
+                      ${isMatched ? ' estar-mword-matched' : ''}
+                      ${isSel     ? ' estar-mword-sel' : ''}
+                      ${isShaking ? ' estar-mword-shake' : ''}
                     `}
-                    onClick={() => clickLeft(word)}
+                    onClick={() => clickWord(word, 'left')}
                     disabled={isMatched}
                     dir="ltr"
                   >{word}</button>
@@ -235,17 +243,19 @@ export default function EnglishStarGame({ player, onGameOver }) {
             {/* right column */}
             <div className="estar-match-col">
               {rightCol.current.map(word => {
-                const isMatched = isRightWordMatched(word)
+                const isMatched = isRightMatched(word)
+                const isSel     = sel?.word === word && sel?.side === 'right'
                 const isShaking = shakeRight === word
                 return (
                   <button
                     key={word}
                     className={`estar-mword estar-mword-right
-                      ${isMatched  ? ' estar-mword-matched' : ''}
-                      ${isShaking  ? ' estar-mword-shake' : ''}
-                      ${selLeft && !isMatched ? ' estar-mword-pickable' : ''}
+                      ${isMatched ? ' estar-mword-matched' : ''}
+                      ${isSel     ? ' estar-mword-sel' : ''}
+                      ${isShaking ? ' estar-mword-shake' : ''}
+                      ${sel && !isMatched && !isSel ? ' estar-mword-pickable' : ''}
                     `}
-                    onClick={() => clickRight(word)}
+                    onClick={() => clickWord(word, 'right')}
                     disabled={isMatched}
                     dir="ltr"
                   >{word}</button>
